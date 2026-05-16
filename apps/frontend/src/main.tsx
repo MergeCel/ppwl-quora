@@ -5,7 +5,7 @@ import './index.css'
 
 // Menggunakan lazy loading agar file hanya diunduh saat dibutuhkan
 const ClassroomApp = lazy(() => import('./App3'))
-const DefaultApp = lazy(() => import('./App2'))
+const DefaultApp = lazy(() => import('./LoginPage'))
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
