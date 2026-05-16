@@ -1,19 +1,13 @@
-// 1. GENERATOR CLIENT (Wajib ada biar bisa di-import di kodingan backend)
 generator client {
   provider   = "prisma-client"
-  output     = "../src/generated/prisma"
+  output     = "../src/generated/prisma-pg"
   engineType = "client"
   runtime    = "bun"
 }
 
-// 2. DATASOURCE (Cuma provider aja, URL udah ditarik dari prisma.config.ts)
 datasource db {
   provider = "postgresql"
 }
-
-// ==========================================
-// KUMPULAN TABEL DATABASE QUORA
-// ==========================================
 
 enum AuthProvider {
   email
@@ -23,16 +17,14 @@ enum AuthProvider {
 enum NotificationType {
   like
   comment
-  follow
 }
 
-// TABEL USERS
 model User {
   id                Int       @id @default(autoincrement())
   name              String
   username          String    @unique
   email             String    @unique
-  password          String?   
+  password          String?
   avatar_url        String?
   bio               String?
   provider          AuthProvider @default(email)
@@ -50,7 +42,6 @@ model User {
   @@map("users")
 }
 
-// TABEL POSTINGAN
 model Post {
   id         Int      @id @default(autoincrement())
   user_id    Int
@@ -67,7 +58,6 @@ model Post {
   @@map("posts")
 }
 
-// TABEL LIKES
 model PostLike {
   id         Int      @id @default(autoincrement())
   post_id    Int
@@ -81,7 +71,6 @@ model PostLike {
   @@map("post_likes")
 }
 
-// TABEL KOMENTAR (1 LEVEL SAJA)
 model Comment {
   id         Int      @id @default(autoincrement())
   post_id    Int
@@ -97,11 +86,10 @@ model Comment {
   @@map("comments")
 }
 
-// TABEL NOTIFIKASI
 model Notification {
   id         Int              @id @default(autoincrement())
-  user_id    Int              
-  actor_id   Int              
+  user_id    Int
+  actor_id   Int
   type       NotificationType
   post_id    Int?
   comment_id Int?
