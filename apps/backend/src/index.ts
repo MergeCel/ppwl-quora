@@ -7,6 +7,7 @@ import { createOAuthClient, getAuthUrl } from "./auth";
 import { getCourses, getCourseWorks, getSubmissions } from "./classroom";
 import type { ApiResponse, HealthCheck, User } from "shared";
 import type { DbClient } from "./types";
+import bcrypt from "bcryptjs"  // ← TAMBAH INI
 
 const makeAuthMiddleware =
   (jwtInstance: any) =>
