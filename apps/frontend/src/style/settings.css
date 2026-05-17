@@ -1,0 +1,429 @@
+.settings-root {
+  min-height: 100vh;
+  background: #181818;
+  color: #fff;
+}
+
+.settings-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  gap: 20px;
+}
+
+/* sidebar */
+
+.settings-sidebar {
+  width: 170px;
+  flex-shrink: 0;
+}
+
+.sidebar-title {
+  font-size: 18px;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sidebar-item {
+  background: transparent;
+  border: none;
+  color: #d7d7d7;
+  text-align: left;
+  padding: 5px 1px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.sidebar-item:hover {
+  background: rgba(
+    255,
+    255,
+    255,
+    0.04
+  );
+}
+
+.sidebar-item-active {
+  background: rgba(
+    185,
+    43,
+    39,
+    0.18
+  );
+
+  color: #ff4f4f;
+}
+
+/* content */
+
+.settings-content {
+  width: 100%;
+  max-width: 620px;
+}
+
+.settings-title {
+  font-size: 18px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+/* section */
+
+.settings-section {
+  border-top: 1px solid
+    rgba(255, 255, 255, 0.08);
+}
+
+.settings-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0 12px;
+}
+
+.settings-section-header h2 {
+  font-size: 14px;
+}
+
+/* rows */
+
+.settings-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid
+    rgba(255, 255, 255, 0.08);
+}
+
+.settings-label {
+  width: 180px;
+  color: #fff;
+  font-size: 15px;
+}
+
+.settings-value {
+  flex: 1;
+  color: #d7d7d7;
+}
+
+.settings-link {
+  background: none;
+  border: none;
+  color: #4f8cff;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+.settings-link:hover {
+  text-decoration: underline;
+}
+
+.primary-email {
+  margin-left: 8px;
+  color: #9a9a9a;
+  font-size: 14px;
+}
+
+/* toggle */
+
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toggle-switch {
+  width: 34px;
+  height: 18px;
+  border-radius: 999px;
+  background: #4a4a4a;
+  position: relative;
+}
+
+.toggle-switch::after {
+  content: "";
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: white;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+}
+
+/* connected */
+
+.connected-platform {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  width: 180px;
+}
+
+.google-icon,
+.facebook-icon {
+  width: 26px;
+  height: 26px;
+
+  border-radius: 50%;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 700;
+}
+
+.google-icon {
+  background: white;
+
+  color: #ea4335;
+}
+
+.facebook-icon {
+  background: #1877f2;
+
+  color: white;
+}
+
+/* responsive */
+
+@media (max-width: 820px) {
+
+  .settings-container {
+  max-width: 800px;
+  margin: auto 0;
+  display: flex;
+  gap: 12px;
+}
+
+  .settings-sidebar {
+    width: 130px;
+  }
+
+  .settings-row {
+    gap: 8px;
+  }
+
+  .settings-label {
+    width: 100%;
+  }
+
+  .connected-platform {
+    width: 100%;
+  }
+}
+
+/* TOP Navbar*/
+
+.topnav {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  width: 100%;
+  height: 56px;
+  background: #1f1f1f;
+  border-bottom: 1px solid
+    rgba(255,255,255,0.06);
+  margin-bottom: 44px;
+}
+
+.topnav-inner {
+  height: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+}
+
+/* logo */
+
+.topnav-logo {
+  margin-left: 35px;
+  color: #ff2f2f;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+/* nav icons */
+.topnav-nav {
+  display: flex;
+  align-items: center;
+}
+
+.topnav-icon {
+  width: 54px;
+  height: 52px;
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: 0.15s;
+}
+
+.topnav-icon:hover {
+  color: rgb(197, 197, 197);
+  background: rgba( 255,255,255,0.03
+  );
+}
+
+.topnav-icon.active {
+  color: white;
+}
+
+/* .topnav-icon.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: #ff2f2f;
+  border-radius: 999px;
+} */
+
+/* notif */
+
+/* .notif-dot {
+  width: 8px;
+  height: 8px;
+  background: #ff2f2f;
+  border-radius: 50%;
+  position: absolute;
+  top: 14px;
+  right: 16px;
+} */
+
+/* .notif-badge {
+  position: absolute;
+  top: 7px;
+  right: 10px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #ff2f2f;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} */
+
+/* search */
+
+.topnav-search {
+  flex: 1;
+  max-width: 560px;
+  height: 38px;
+  background: #111;
+  border: 1px solid
+    rgba(255,255,255,0.08);
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  margin-left: 8px;
+}
+
+.search-icon {
+  color: #9a9a9a;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.topnav-search input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 14px;
+}
+
+.topnav-search input::placeholder {
+  color: #9a9a9a;
+}
+
+/* right */
+
+.topnav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.topnav-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #d9d9d9;
+  color: #555;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.topnav-globe,
+.topnav-dropdown {
+  border: none;
+
+  background: transparent;
+
+  color: #d7d7d7;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+}
+
+.topnav-question-btn {
+  height: 38px;
+
+  padding: 0 18px;
+
+  border: none;
+
+  border-radius: 999px;
+
+  background: #ff2f2f;
+
+  color: white;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.topnav-question-btn:hover {
+  background: #ff4545;
+}
