@@ -1,27 +1,38 @@
+import { useState, useEffect } from "react";
 import TopNavbar from "./components/layout/TopNavbar";
 import LeftSidebar from "./components/layout/LeftSidebar";
 import CreatePostBox from "./components/post/CreatePostBox";
 import PostCard from "./components/post/PostCard";
 import "./style/home.css";
 
-const dummyPosts = [
-  {
-    id: 1,
-    author: "Alpraditia Malik",
-    role: "Owner/Author di Lawangsinau (2025–saat ini) · Diperbarui 20 Apr",
-    time: "",
-    question: "Sejauh mana buku membawa mu berkembang?",
-    content:
-      "Saya sebelum baca buku: Goblog, ga pede, miskin, gampang emosian, ga sensitif, gendut, penyakitan, dan banyak lagi. Bisa diitung, jumlah buku yang saya baca sejak lahir sampai umur 34 tahun cuma 17. Iyak. Kalian ga salah baca. Cuma tujuh belas.",
-    image:
-      "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=700&q=80",
-    avatarColor: "#7c3aed",
-    likes: 62,
-    comments: 14,
-  },
-];
-
 export default function HomePage() {
+  // 1. Siapkan state untuk nyimpen data dari database AWS
+  const [posts, setPosts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 2. Tarik data (Fetch) pas halaman pertama kali dibuka
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        // Nembak ke URL backend yang ada di .env (localhost:3000)
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/posts`); 
+        const data = await response.json();
+
+        // Kalau sukses, masukin datanya ke state
+        if (response.ok) {
+          // Asumsi struktur data dari backend Cello ada di dalam property 'data' atau array langsung
+          setPosts(data.data || data); 
+        }
+      } catch (error) {
+        console.error("Gagal narik data postingan:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
   return (
     <div className="home-page">
       <TopNavbar user={{ name: "User", email: "user@gmail.com" }} />
@@ -31,21 +42,28 @@ export default function HomePage() {
 
         <main className="feed-section">
           <CreatePostBox userName="User" />
-          {dummyPosts.map((post) => (
-            <PostCard
-              key={post.id}
-              author={post.author}
-              role={post.role}
-              time={post.time}
-              question={post.question}
-              content={post.content}
-              image={post.image}
-              originSpace={post.originSpace}
-              avatarColor={post.avatarColor}
-              likes={post.likes}
-              comments={post.comments}
-            />
-          ))}
+
+          {/* 3. Tampilkan efek loading atau render datanya */}
+          {isLoading ? (
+            <div className="text-center mt-10 text-gray-500 font-semibold">Memuat postingan dari AWS...</div>
+          ) : posts.length > 0 ? (
+            posts.map((post) => (
+              <PostCard
+                key={post.id}
+                author={post.author?.name || "Anonim"}
+                role={post.author?.role || "Pengguna Quora"}
+                question={post.title || post.question} // Menyesuaikan nama kolom di database
+                content={post.content}
+                image={post.image}
+                likes={post.likesCount || 0}
+                comments={post.commentsCount || 0}
+              />
+            ))
+          ) : (
+            <div className="text-center mt-10 text-gray-500 font-semibold">
+              Belum ada postingan. Jadilah yang pertama bertanya!
+            </div>
+          )}
         </main>
       </div>
     </div>
