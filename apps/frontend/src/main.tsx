@@ -1,7 +1,7 @@
 import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import './index.css'
+import './style/index.css'
 
 // Menggunakan lazy loading agar file hanya diunduh saat dibutuhkan
 const ClassroomApp = lazy(() => import('./App3'))
