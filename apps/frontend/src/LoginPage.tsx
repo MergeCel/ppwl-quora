@@ -49,11 +49,11 @@ export default function LoginPage() {
         throw new Error(data.message || "Login gagal");
       }
 
-      // Simpan token dan data user ke localStorage
+  
       localStorage.setItem("token", data.accessToken);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Redirect ke beranda tanpa refresh
+
       navigate("/");
     } catch (err: any) {
       setError(err.message);
@@ -61,8 +61,7 @@ export default function LoginPage() {
   };
 
   const handleGoogleOAuth = () => {
-    // Redirect ke backend Google OAuth (masih pakai redirect)
-    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google`;
+    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/login`;
   };
 
   const handleRegisterSuccess = (email: string) => {
