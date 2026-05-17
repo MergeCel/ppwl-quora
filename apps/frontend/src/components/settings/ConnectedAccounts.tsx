@@ -1,4 +1,14 @@
-export default function ConnectedAccounts() {
+import GoogleIcon from "../auth/GoogleButton.tsx";
+import FacebookIcon from "../auth/FacebookButton.tsx";
+
+export default function ConnectedAccounts({
+  user,
+}: {
+  user: {
+    name: string;
+    email: string;
+  };
+}) {
   return (
     <section className="settings-section">
 
@@ -17,16 +27,14 @@ export default function ConnectedAccounts() {
       <div className="settings-row">
 
         <div className="connected-platform">
-          <span className="google-icon">
-            G
-          </span>
+          <GoogleIcon />
 
           <span>Google</span>
         </div>
 
         <div className="settings-value">
           <p>
-            regishashrn07@gmail.com
+            {user.email}
           </p>
 
           <button className="settings-link">
@@ -39,9 +47,7 @@ export default function ConnectedAccounts() {
       <div className="settings-row">
 
         <div className="connected-platform">
-          <span className="facebook-icon">
-            f
-          </span>
+          <FacebookIcon />
 
           <span>Facebook</span>
         </div>

@@ -1,4 +1,33 @@
-export default function AccountSettings() {
+import { useState } from "react";
+
+import ChangePasswordModal from "./modals/ChangePasswordModal.tsx";
+import AddEmailModal from "./modals/AddEmailModal.tsx";
+import LogoutDevicesModal from "./modals/LogoutDevicesModal.tsx";
+
+export default function AccountSettings({
+  user,
+}: {
+  user: {
+    name: string;
+    email: string;
+  };
+}) {
+
+  const [
+    showPasswordModal,
+    setShowPasswordModal,
+  ] = useState(false);
+
+  const [
+    showEmailModal,
+    setShowEmailModal,
+  ] = useState(false);
+
+  const [
+    showLogoutModal,
+    setShowLogoutModal,
+  ] = useState(false);
+
   return (
     <section className="settings-section">
 
@@ -9,15 +38,37 @@ export default function AccountSettings() {
 
         <div className="settings-value">
           <p>
-            regishashrn07@gmail.com
+            {user.email}
+
             <span className="primary-email">
               Surel Utama
             </span>
           </p>
-
-          <button className="settings-link">
-            Tambah Alamat Surel Lain
+          <button
+            className="settings-link"
+            onClick={() =>
+              setShowEmailModal(
+                !showEmailModal
+              )
+            }
+          >
+            Tambah Surel
           </button>
+          {showEmailModal && (
+            <div className="add-email-inline">
+
+              <input
+                type="email"
+                placeholder="nama@contoh.id"
+                className="form-input"
+              />
+
+              <button className="add-email-btn">
+                Tambah Surel
+              </button>
+
+            </div>
+          )}
         </div>
       </div>
 
@@ -27,7 +78,12 @@ export default function AccountSettings() {
         </div>
 
         <div className="settings-value">
-          <button className="settings-link">
+          <button
+            className="settings-link"
+            onClick={() =>
+              setShowPasswordModal(true)
+            }
+          >
             Ubah Sandi
           </button>
         </div>
@@ -39,7 +95,12 @@ export default function AccountSettings() {
         </div>
 
         <div className="settings-value">
-          <button className="settings-link">
+          <button
+            className="settings-link"
+            onClick={() =>
+              setShowLogoutModal(true)
+            }
+          >
             Keluar dari semua peramban lain
           </button>
         </div>
@@ -60,6 +121,22 @@ export default function AccountSettings() {
           </div>
         </div>
       </div>
+
+      {showPasswordModal && (
+        <ChangePasswordModal
+          onClose={() =>
+            setShowPasswordModal(false)
+          }
+        />
+      )}
+
+      {showLogoutModal && (
+        <LogoutDevicesModal
+          onClose={() =>
+            setShowLogoutModal(false)
+          }
+        />
+      )}
 
     </section>
   );

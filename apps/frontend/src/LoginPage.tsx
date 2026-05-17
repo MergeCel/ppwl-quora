@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./style/login.css";
 
 import GoogleButton from "./components/auth/GoogleButton.tsx";
@@ -12,6 +13,8 @@ interface LoginForm {
 }
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+
   const [loginForm, setLoginForm] = useState<LoginForm>({
     email: "",
     password: "",
@@ -46,20 +49,20 @@ export default function LoginPage() {
         throw new Error(data.message || "Login gagal");
       }
 
-      localStorage.setItem(
-        "token",
-        data.accessToken
-        )
+      // Simpan token dan data user ke localStorage
+      localStorage.setItem("token", data.accessToken);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-      window.location.href = "/";
+      // Redirect ke beranda tanpa refresh
+      navigate("/");
     } catch (err: any) {
       setError(err.message);
     }
   };
 
   const handleGoogleOAuth = () => {
-    window.location.href =
-      `${import.meta.env.VITE_BACKEND_URL}/auth/google`;
+    // Redirect ke backend Google OAuth (masih pakai redirect)
+    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google`;
   };
 
   const handleRegisterSuccess = (email: string) => {
@@ -73,41 +76,25 @@ export default function LoginPage() {
       <div className="lp-root">
         <main className="lp-card">
           <div className="lp-logo">Quora</div>
-
           <div className="lp-lang">Bahasa Indonesia</div>
-
           <div className="lp-tagline">
             Tempat berbagi pengetahuan dan memahami dunia lebih baik
           </div>
-          
 
           <div className="lp-inner">
             <div className="lp-left">
-                <p className="lp-tos">
+              <p className="lp-tos">
                 Dengan melanjutkan, Anda menunjukkan bahwa Anda
                 menyetujui{" "}
-                <a href="#">
-                    Persyaratan Layanan
-                </a>{" "}
-                dan{" "}
-                <a href="#">
-                    Kebijakan Privasi
-                </a>{" "}
-                Quora.
-                </p>
+                <a href="#">Persyaratan Layanan</a> dan{" "}
+                <a href="#">Kebijakan Privasi</a> Quora.
+              </p>
               <GoogleButton
                 label="Lanjutkan dengan Google"
                 onClick={handleGoogleOAuth}
               />
-
-              <FacebookButton
-                label="Lanjutkan dengan Facebook"
-              />
-
-              <a
-                className="register-link"
-                onClick={() => setShowRegister(true)}
-              >
+              <FacebookButton label="Lanjutkan dengan Facebook" />
+              <a className="register-link" onClick={() => setShowRegister(true)}>
                 Daftar dengan surel
               </a>
             </div>
@@ -116,93 +103,59 @@ export default function LoginPage() {
 
             <div className="lp-right">
               <h3>Masuk</h3>
-
               <div className="form-group">
                 <label className="form-label">Surel</label>
-
                 <input
                   className="form-input"
                   type="email"
                   placeholder="Surel Anda"
                   value={loginForm.email}
                   onChange={(e) =>
-                    setLoginForm({
-                      ...loginForm,
-                      email: e.target.value,
-                    })
+                    setLoginForm({ ...loginForm, email: e.target.value })
                   }
                 />
               </div>
-
               <div className="form-group">
                 <label className="form-label">Sandi</label>
-
                 <input
                   className="form-input"
                   type="password"
                   placeholder="Kata sandi Anda"
                   value={loginForm.password}
                   onChange={(e) =>
-                    setLoginForm({
-                      ...loginForm,
-                      password: e.target.value,
-                    })
+                    setLoginForm({ ...loginForm, password: e.target.value })
                   }
                 />
               </div>
-
-              {error && (
-                <p className="error-msg">{error}</p>
-              )}
-
+              {error && <p className="error-msg">{error}</p>}
               <div className="login-bottom">
-                <button
-                  className="forgot-link"
-                  type="button"
-                >
+                <button className="forgot-link" type="button">
                   Lupa kata sandi?
                 </button>
-
-                <button
-                  className="btn-primary"
-                  onClick={handleLogin}
-                >
+                <button className="btn-primary" onClick={handleLogin}>
                   Masuk
                 </button>
               </div>
             </div>
           </div>
           <div className="lp-footer-wrapper">
-        <button className="lang-toggle">
-            English ›
-        </button>
-
-        <footer className="lp-footer">
-            <a href="#">Tentang Kami</a>
-            ·
-            <a href="#">Karier</a>
-            ·
-            <a href="#">Privasi</a>
-            ·
-            <a href="#">Ketentuan</a>
-            ·
-            <a href="#">Kontak</a>
-            ·
-            <a href="#">Bahasa</a>
-            ·
-            <a href="#">Pers</a>
-            · © Quora, Inc. 2026
-        </footer>
-        </div>
+            <button className="lang-toggle">English ›</button>
+            <footer className="lp-footer">
+              <a href="#">Tentang Kami</a> · <a href="#">Karier</a> ·{" "}
+              <a href="#">Privasi</a> · <a href="#">Ketentuan</a> ·{" "}
+              <a href="#">Kontak</a> · <a href="#">Bahasa</a> ·{" "}
+              <a href="#">Pers</a> · © Quora, Inc. 2026
+            </footer>
+          </div>
         </main>
       </div>
 
       {showRegister && (
         <RegisterModal
-            onClose={() => setShowRegister(false)}
-            onSuccess={handleRegisterSuccess}
+          onClose={() => setShowRegister(false)}
+          onSuccess={handleRegisterSuccess}
         />
-        )}
+      )}
 
       {showOtp && (
         <OtpModal
@@ -210,7 +163,7 @@ export default function LoginPage() {
           onClose={() => setShowOtp(false)}
           onVerified={() => {
             setShowOtp(false);
-            window.location.href = "/";
+            navigate("/");
           }}
         />
       )}

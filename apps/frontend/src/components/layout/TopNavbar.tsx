@@ -9,84 +9,57 @@ import {
   ChevronDown,
 } from "lucide-react";
 
-export default function TopNavbar() {
+export default function TopNavbar({
+  user,
+}: {
+  user: { name: string; email: string };
+}) {
   return (
     <header className="topnav">
-
       <div className="topnav-inner">
 
-        {/* logo */}
-        <div className="topnav-logo">
-          Quora
-        </div>
+        {/* Logo */}
+        <div className="topnav-logo">Quora</div>
 
-        {/* nav */}
+        {/* Nav icons */}
         <div className="topnav-nav">
-
-          <button className="topnav-icon active">
+          <button className="topnav-icon" title="Beranda">
             <Home size={22} />
           </button>
-
-          <button className="topnav-icon">
+          <button className="topnav-icon" title="Jawabanku">
             <ClipboardList size={22} />
             <div className="notif-dot" />
           </button>
-
-          <button className="topnav-icon">
+          <button className="topnav-icon" title="Tulis">
             <PenSquare size={22} />
           </button>
-
-          <button className="topnav-icon">
+          <button className="topnav-icon" title="Komunitas">
             <Users size={22} />
           </button>
-
-          <button className="topnav-icon">
+          <button className="topnav-icon" title="Notifikasi">
             <Bell size={22} />
-            <div className="notif-badge">
-              
-            </div>
+            <div className="notif-badge"></div>
           </button>
-
         </div>
 
-        {/* search */}
+        {/* Search */}
         <div className="topnav-search">
-
-          <Search
-            size={16}
-            className="search-icon"
-          />
-
-          <input
-            type="text"
-            placeholder="Cari Quora"
-          />
-
+          <Search size={15} className="search-icon" />
+          <input type="text" placeholder="Cari Quora" />
         </div>
 
-        {/* right */}
+        {/* Right */}
         <div className="topnav-right">
-
           <button className="topnav-avatar">
-            R
+            {user.name.charAt(0).toUpperCase()}
           </button>
-
           <button className="topnav-globe">
             <Globe size={18} />
           </button>
-
-          <button className="topnav-question-btn">
-            Tambah pertanyaan
-          </button>
-
-          <button className="topnav-dropdown">
-            <ChevronDown size={16} />
-          </button>
-
+          <button className="topnav-question-btn">Tambah pertanyaan </button>
         </div>
 
       </div>
-
     </header>
   );
 }
