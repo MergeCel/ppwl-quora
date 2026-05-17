@@ -6,10 +6,16 @@ import ConnectedAccounts from "./components/settings/ConnectedAccounts.tsx";
 import TopNavbar from "./components/layout/TopNavbar.tsx";
 
 export default function SettingsPage() {
+  const user = {
+    name: localStorage.getItem("name") || "User",
+
+    email:
+      localStorage.getItem("email") ||
+      "user@gmail.com",
+  };
   return (
     <div className="settings-root">
-      <TopNavbar />
-
+      <TopNavbar user={user} />
       <div className="settings-container">
 
         <SettingsSidebar />
@@ -20,9 +26,9 @@ export default function SettingsPage() {
             Setelan Akun
           </h1>
 
-          <AccountSettings />
+          <AccountSettings user={user} />
 
-          <ConnectedAccounts />
+          <ConnectedAccounts user={user} />
 
         </div>
 
