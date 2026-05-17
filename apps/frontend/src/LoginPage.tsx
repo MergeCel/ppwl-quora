@@ -58,8 +58,7 @@ export default function LoginPage() {
   };
 
   const handleGoogleOAuth = () => {
-    window.location.href =
-      `${import.meta.env.VITE_BACKEND_URL}/auth/google`;
+    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/login`;
   };
 
   const handleRegisterSuccess = (email: string) => {
