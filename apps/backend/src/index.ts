@@ -7,7 +7,7 @@ import { createOAuthClient, getAuthUrl } from "./auth";
 import { getCourses, getCourseWorks, getSubmissions } from "./classroom";
 import type { ApiResponse, HealthCheck, User } from "shared";
 import type { DbClient } from "./types";
-import bcrypt from "bcryptjs"  // ← TAMBAH INI
+import bcrypt from "bcryptjs"
 
 const makeAuthMiddleware =
   (jwtInstance: any) =>
@@ -40,13 +40,10 @@ export const createApp = (getPrisma: () => DbClient) => {
 
     .use(postRoutes(getPrisma))
 
-    .get(
-      "/",
-      (): ApiResponse<HealthCheck> => ({
-        data: { status: "ok" },
-        message: "server running",
-      }),
-    )
+    .get("/", (): ApiResponse<HealthCheck> => ({
+      data: { status: "ok" },
+      message: "server running",
+    }))
 
     .get("/debug", async () => {
       try {
@@ -57,7 +54,7 @@ export const createApp = (getPrisma: () => DbClient) => {
           database: {
             type: "PostgreSQL AWS RDS",
             connected: true,
-            userCount: userCount,
+            userCount,
             sampleUser: sample || null,
           },
           timestamp: new Date().toISOString(),
@@ -74,16 +71,109 @@ export const createApp = (getPrisma: () => DbClient) => {
       }
     })
 
-    .get("/users", async () => {
-      const users = await getPrisma().user.findMany();
-      const response: ApiResponse<User[]> = {
-        data: users,
-        message: "User list retrieved",
-      };
-      return response;
+    // ===============================
+    // GET /users?key=secret (wajib modul)
+    // ===============================
+    .get("/users", async ({ query, set }: any) => {
+      if (query.key !== process.env.SECRET_KEY) {
+        set.status = 403
+        return { message: "Forbidden" }
+      }
+      const users = await getPrisma().user.findMany({
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          email: true,
+          provider: true,
+          created_at: true
+        }
+      })
+      return { data: users, message: "User list retrieved" }
     })
 
-    .get("/auth/login", ({ redirect }) => {
+    // ===============================
+    // POST /auth/register
+    // ===============================
+    .post("/auth/register", async ({ body, set }: any) => {
+      const { name, email, password, username } = body
+
+      const existing = await getPrisma().user.findUnique({ where: { email } })
+      if (existing) {
+        set.status = 400
+        return { message: "Email sudah terdaftar" }
+      }
+
+      const hashed = await bcrypt.hash(password, 10)
+
+      const user = await getPrisma().user.create({
+        data: {
+          name,
+          username: username || email.split("@")[0],
+          email,
+          password: hashed,
+          provider: "email"
+        }
+      })
+
+      set.status = 201
+      return { message: "Register berhasil", user }
+    })
+
+    // ===============================
+    // POST /auth/login (email)
+    // ===============================
+    .post("/auth/login", async ({ body, set, jwt }: any) => {
+      const { email, password } = body
+
+      const user = await getPrisma().user.findUnique({ where: { email } })
+      if (!user) {
+        set.status = 404
+        return { message: "User tidak ditemukan" }
+      }
+
+      const valid = await bcrypt.compare(password, user.password!)
+      if (!valid) {
+        set.status = 401
+        return { message: "Password salah" }
+      }
+
+      const token = await jwt.sign({ id: user.id.toString() })
+
+      return {
+        user: {
+          id: user.id.toString(),
+          name: user.name,
+          email: user.email,
+          avatarUrl: user.avatar_url
+        },
+        accessToken: token
+      }
+    })
+
+    // ===============================
+    // GET /seed?key= (dummy data)
+    // ===============================
+    .get("/seed", async ({ query, set }: any) => {
+      if (query.key !== process.env.SECRET_KEY) {
+        set.status = 403
+        return { message: "Forbidden" }
+      }
+
+      await getPrisma().post.createMany({
+        data: [
+          { user_id: 1, content: "Apa pendapat kalian soal AI di 2026?" },
+          { user_id: 1, content: "Tips belajar pemrograman dari nol" }
+        ]
+      })
+
+      return { message: "Dummy data berhasil dibuat" }
+    })
+
+    // ===============================
+    // ROUTE LAMA — BIARKAN
+    // ===============================
+    .get("/auth/google", ({ redirect }) => {
       const oauth2Client = createOAuthClient();
       const url = getAuthUrl(oauth2Client);
       return redirect(url);
@@ -115,26 +205,22 @@ export const createApp = (getPrisma: () => DbClient) => {
       return { data: courses };
     })
 
-    .get(
-      "/classroom/courses/:courseId/submissions",
-      async ({ params, headers, jwt, set }) => {
-        const auth = makeAuthMiddleware(jwt);
-        const user = await auth({ headers, set });
-        if (!user) return;
-        const { courseId } = params;
-        const [courseWorks, submissions] = await Promise.all([
-          getCourseWorks(user.access_token, courseId),
-          getSubmissions(user.access_token, courseId),
-        ]);
-        return {
-          data: courseWorks.map((cw) => ({
-            courseWork: cw,
-            submission:
-              submissions.find((s) => s.courseWorkId === cw.id) ?? null,
-          })),
-        };
-      },
-    );
+    .get("/classroom/courses/:courseId/submissions", async ({ params, headers, jwt, set }) => {
+      const auth = makeAuthMiddleware(jwt);
+      const user = await auth({ headers, set });
+      if (!user) return;
+      const { courseId } = params;
+      const [courseWorks, submissions] = await Promise.all([
+        getCourseWorks(user.access_token, courseId),
+        getSubmissions(user.access_token, courseId),
+      ]);
+      return {
+        data: courseWorks.map((cw) => ({
+          courseWork: cw,
+          submission: submissions.find((s) => s.courseWorkId === cw.id) ?? null,
+        })),
+      };
+    });
 
   return app;
 };

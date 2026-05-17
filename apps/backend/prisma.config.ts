@@ -1,3 +1,5 @@
+import { resolve } from "path"
+import { existsSync, readFileSync } from "fs"
 import { defineConfig } from "prisma/config";
 
 const envPath = resolve(process.cwd(), ".env");
@@ -21,7 +23,6 @@ if (!process.env.DATABASE_URL && existsSync(envPath)) {
   }
 }
 
-// Normalize DATABASE_URL: strip surrounding quotes if present (common in .env files)
 if (process.env.DATABASE_URL) {
   let raw = process.env.DATABASE_URL.trim();
   if ((raw.startsWith('"') && raw.endsWith('"')) || (raw.startsWith("'") && raw.endsWith("'"))) {
@@ -30,7 +31,6 @@ if (process.env.DATABASE_URL) {
   }
 }
 
-// Debug: print DATABASE_URL observed by Prisma config (first 200 chars + char codes)
 try {
   const dbg = process.env.DATABASE_URL || "";
   console.log("[prisma.config] DATABASE_URL preview:", dbg.slice(0, 200));

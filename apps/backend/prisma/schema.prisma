@@ -38,8 +38,6 @@ model User {
   comments               Comment[]
   notifications_sent     Notification[] @relation("SentNotifications")
   notifications_received Notification[] @relation("ReceivedNotifications")
-  likes                  PostLike[]
-  posts                  Post[]
 
   @@map("users")
 }
@@ -51,6 +49,7 @@ model Post {
   image_url     String?
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt
+
   comments      Comment[]
   notifications Notification[]
   likes         PostLike[]
@@ -64,20 +63,22 @@ model PostLike {
   post_id    Int
   user_id    Int
   created_at DateTime @default(now())
-  post       Post     @relation(fields: [post_id], references: [id], onDelete: Cascade)
-  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([post_id, user_id])
   @@map("post_likes")
 }
 
 model Comment {
-  id            Int            @id @default(autoincrement())
-  post_id       Int
-  user_id       Int
-  content       String
-  created_at    DateTime       @default(now())
-  updated_at    DateTime       @updatedAt
+  id         Int      @id @default(autoincrement())
+  post_id    Int
+  user_id    Int
+  content    String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
   post          Post           @relation(fields: [post_id], references: [id], onDelete: Cascade)
   user          User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
   notifications Notification[]
@@ -94,21 +95,11 @@ model Notification {
   comment_id Int?
   is_read    Boolean          @default(false)
   created_at DateTime         @default(now())
-  actor      User             @relation("SentNotifications", fields: [actor_id], references: [id], onDelete: Cascade)
-  comment    Comment?         @relation(fields: [comment_id], references: [id], onDelete: Cascade)
-  post       Post?            @relation(fields: [post_id], references: [id], onDelete: Cascade)
-  user       User             @relation("ReceivedNotifications", fields: [user_id], references: [id], onDelete: Cascade)
+
+  actor   User     @relation("SentNotifications", fields: [actor_id], references: [id], onDelete: Cascade)
+  comment Comment? @relation(fields: [comment_id], references: [id], onDelete: Cascade)
+  post    Post?    @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  user    User     @relation("ReceivedNotifications", fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("notifications")
-}
-
-enum AuthProvider {
-  email
-  google
-}
-
-enum NotificationType {
-  like
-  comment
-  follow
 }
