@@ -511,6 +511,23 @@ width: 730px;
   text-decoration: underline;
 }
 
+.form-input-error {
+  border-color: #d93a2f !important;
+}
+
+.form-error {
+  margin-top: 6px;
+
+  color: #d93a2f;
+
+  font-size: 13px;
+  line-height: 1.4;
+}
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 @media (max-width: 640px) {
   .lp-root {
     grid-template-columns: 1fr;

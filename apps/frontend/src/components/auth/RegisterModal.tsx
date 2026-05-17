@@ -3,35 +3,7 @@ import { useState } from "react";
 interface RegisterForm {
   name: string;
   email: string;
-  birthMonth: string;
-  birthDay: string;
-  birthYear: string;
 }
-
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "Mei",
-  "Jun",
-  "Jul",
-  "Agu",
-  "Sep",
-  "Okt",
-  "Nov",
-  "Des",
-];
-
-const DAYS = Array.from(
-  { length: 31 },
-  (_, i) => String(i + 1)
-);
-
-const YEARS = Array.from(
-  { length: 100 },
-  (_, i) => String(2025 - i)
-);
 
 export default function RegisterModal({
   onClose,
@@ -44,17 +16,54 @@ export default function RegisterModal({
     useState<RegisterForm>({
       name: "",
       email: "",
-      birthMonth: "",
-      birthDay: "",
-      birthYear: "",
     });
 
-  const handleSubmit = () => {
-    if (!form.name || !form.email) {
-      return;
-    }
+  const isNameValid =
+    form.name.trim().length >= 2;
 
-    onSuccess(form.email);
+  const isEmailValid =
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      .test(form.email);
+
+  const isFormValid =
+    isNameValid && isEmailValid;
+
+  const handleSubmit = async () => {
+
+    if (!isFormValid) return;
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/auth/register`,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body: JSON.stringify({
+            name: form.name,
+            email: form.email,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(
+          data.message || "Register gagal"
+        );
+      }
+
+      onSuccess(form.email);
+
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message);
+    }
   };
 
   return (
@@ -86,7 +95,12 @@ export default function RegisterModal({
           </label>
 
           <input
-            className="form-input"
+            className={`form-input ${
+              form.name &&
+              !isNameValid
+                ? "form-input-error"
+                : ""
+            }`}
             type="text"
             placeholder="Nama panggilan Anda"
             value={form.name}
@@ -97,6 +111,13 @@ export default function RegisterModal({
               })
             }
           />
+
+          {form.name &&
+           !isNameValid && (
+            <p className="form-error">
+              ⓘ Panjang nama Anda harus terdiri dari setidaknya 2 karakter.
+            </p>
+          )}
         </div>
 
         <div className="form-group">
@@ -105,7 +126,12 @@ export default function RegisterModal({
           </label>
 
           <input
-            className="form-input"
+            className={`form-input ${
+              form.email &&
+              !isEmailValid
+                ? "form-input-error"
+                : ""
+            }`}
             type="email"
             placeholder="Surel Anda"
             value={form.email}
@@ -116,95 +142,20 @@ export default function RegisterModal({
               })
             }
           />
-        </div>
 
-        <div className="form-group">
-          <label className="form-label">
-            Ulang tahun
-          </label>
-
-          <div className="birthday-row">
-            <select
-              className="form-select"
-              value={form.birthMonth}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  birthMonth:
-                    e.target.value,
-                })
-              }
-            >
-              <option value="">
-                Bulan
-              </option>
-
-              {MONTHS.map((m) => (
-                <option
-                  key={m}
-                  value={m}
-                >
-                  {m}
-                </option>
-              ))}
-            </select>
-
-            <select
-              className="form-select"
-              value={form.birthDay}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  birthDay:
-                    e.target.value,
-                })
-              }
-            >
-              <option value="">
-                Hari
-              </option>
-
-              {DAYS.map((d) => (
-                <option
-                  key={d}
-                  value={d}
-                >
-                  {d}
-                </option>
-              ))}
-            </select>
-
-            <select
-              className="form-select form-select--year"
-              value={form.birthYear}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  birthYear:
-                    e.target.value,
-                })
-              }
-            >
-              <option value="">
-                Tahun
-              </option>
-
-              {YEARS.map((y) => (
-                <option
-                  key={y}
-                  value={y}
-                >
-                  {y}
-                </option>
-              ))}
-            </select>
-          </div>
+          {form.email &&
+           !isEmailValid && (
+            <p className="form-error">
+              ⓘ Alamat surel yang Anda masukkan tidak valid.
+            </p>
+          )}
         </div>
 
         <div className="modal-footer">
           <button
             className="btn-primary"
             onClick={handleSubmit}
+            disabled={!isFormValid}
           >
             Selanjutnya
           </button>

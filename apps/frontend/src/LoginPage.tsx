@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./login.css";
+import "./style/login.css";
 
 import GoogleButton from "./components/auth/GoogleButton.tsx";
 import FacebookButton from "./components/auth/FacebookButton.tsx";
@@ -46,7 +46,10 @@ export default function LoginPage() {
         throw new Error(data.message || "Login gagal");
       }
 
-      localStorage.setItem("token", data.token);
+      localStorage.setItem(
+        "token",
+        data.accessToken
+        )
 
       window.location.href = "/";
     } catch (err: any) {
