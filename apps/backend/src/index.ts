@@ -4,7 +4,6 @@ import { cookie } from "@elysiajs/cookie";
 import { jwt } from "@elysiajs/jwt";
 import { cors } from "@elysiajs/cors";
 import { createOAuthClient, getAuthUrl } from "./auth";
-import { getCourses, getCourseWorks, getSubmissions } from "./classroom";
 import type { ApiResponse, HealthCheck, User } from "shared";
 import type { DbClient } from "./types";
 import bcrypt from "bcryptjs"
@@ -171,7 +170,7 @@ export const createApp = (getPrisma: () => DbClient) => {
     })
 
     // ===============================
-    // ROUTE LAMA — BIARKAN
+    // ROUTE LAMA — BIARKAN (Sudah diubah redirectnya)
     // ===============================
     .get("/auth/google", ({ redirect }) => {
       const oauth2Client = createOAuthClient();
@@ -187,7 +186,8 @@ export const createApp = (getPrisma: () => DbClient) => {
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token,
       });
-      return redirect(`${process.env.FRONTEND_URL}/classroom?token=${token}`);
+      // Diubah agar kembalinya ke halaman home
+      return redirect(`${process.env.FRONTEND_URL}/home?token=${token}`);
     })
 
     .get("/auth/me", async ({ headers, jwt, set }) => {
@@ -195,31 +195,6 @@ export const createApp = (getPrisma: () => DbClient) => {
       const user = await auth({ headers, set });
       if (!user) return { loggedIn: false };
       return { loggedIn: true, user };
-    })
-
-    .get("/classroom/courses", async ({ headers, jwt, set }) => {
-      const auth = makeAuthMiddleware(jwt);
-      const user = await auth({ headers, set });
-      if (!user) return;
-      const courses = await getCourses(user.access_token);
-      return { data: courses };
-    })
-
-    .get("/classroom/courses/:courseId/submissions", async ({ params, headers, jwt, set }) => {
-      const auth = makeAuthMiddleware(jwt);
-      const user = await auth({ headers, set });
-      if (!user) return;
-      const { courseId } = params;
-      const [courseWorks, submissions] = await Promise.all([
-        getCourseWorks(user.access_token, courseId),
-        getSubmissions(user.access_token, courseId),
-      ]);
-      return {
-        data: courseWorks.map((cw) => ({
-          courseWork: cw,
-          submission: submissions.find((s) => s.courseWorkId === cw.id) ?? null,
-        })),
-      };
     });
 
   return app;
