@@ -8,7 +8,7 @@ import {
   Globe,
 } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // 👈 Impor useNavigate
+import { useNavigate } from "react-router-dom";
 import ProfileDropdown from "./ProfileDropdown";
 
 type TopNavbarProps = {
@@ -20,20 +20,28 @@ type TopNavbarProps = {
 
 export default function TopNavbar({ user }: TopNavbarProps) {
   const [showDropdown, setShowDropdown] = useState(false);
-  const navigate = useNavigate(); // 👈 Inisialisasi navigasi
+  const navigate = useNavigate();
 
   return (
     <header className="topnav">
       <div className="topnav-inner">
 
         {/* Logo */}
-        <div className="topnav-logo" style={{ cursor: "pointer" }} onClick={() => navigate("/home")}>
+        <div 
+          className="topnav-logo" 
+          style={{ cursor: "pointer" }} 
+          onClick={() => navigate("/home")}
+        >
           Quora
         </div>
 
         {/* Nav icons */}
         <div className="topnav-nav">
-          <button className="topnav-icon" title="Beranda" onClick={() => navigate("/home")}>
+          <button 
+            className="topnav-icon" 
+            title="Beranda" 
+            onClick={() => navigate("/home")}
+          >
             <Home size={22} />
           </button>
 
@@ -50,10 +58,10 @@ export default function TopNavbar({ user }: TopNavbarProps) {
             <Users size={22} />
           </button>
 
-          {/* 🚀 TOMBOL NOTIFIKASI SEKARANG MENGARAH KE HALAMAN FITUR NOTIFIKASIMU */}
-          <button 
-            className="topnav-icon" 
-            title="Notifikasi" 
+          {/* 🔔 TOMBOL LONCENG NOTIFIKASI YANG SUDAH FIX */}
+          <button
+            className="topnav-icon"
+            title="Notifikasi"
             onClick={() => navigate("/your-feature")}
           >
             <Bell size={22} />
