@@ -63,13 +63,34 @@ export default function TopNavbar({ user }: TopNavbarProps) {
 
         {/* Sisi Kanan: Avatar User, Bahasa, dan Tombol Pertanyaan */}
         <div className="topnav-right">
-          {/* Tombol Avatar yang men-trigger state dropdown */}
-          <button
-            className="topnav-avatar"
-            onClick={() => setShowDropdown(!showDropdown)}
-          >
-            {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
-          </button>
+          
+          {/* Pembungkus Relatif untuk Mengunci Posisi Dasar Dropdown */}
+          <div style={{ position: "relative", display: "inline-block" }}>
+            {/* Tombol Avatar */}
+            <button
+              className="topnav-avatar"
+              onClick={() => setShowDropdown(!showDropdown)}
+            >
+              {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+            </button>
+
+            {/* KUNCI UTAMA: Kita bungkus ProfileDropdown dan timpa CSS right-nya secara paksa */}
+            {showDropdown && (
+              <div style={{ position: "absolute", right: 0, top: 0, zIndex: 99999 }} className="forced-dropdown-wrapper">
+                <ProfileDropdown 
+                  user={user} 
+                  onClose={() => setShowDropdown(false)} 
+                />
+                {/* Tag style inline di bawah ini buat nabrak nilai 'right: 90px' bawaan dari home.css */}
+                <style>{`
+                  .profile-dropdown {
+                    right: 0px !important;
+                    top: 50px !important;
+                  }
+                `}</style>
+              </div>
+            )}
+          </div>
 
           <button className="topnav-globe">
             <Globe size={18} />
@@ -79,13 +100,6 @@ export default function TopNavbar({ user }: TopNavbarProps) {
             Tambah pertanyaan
           </button>
 
-          {/* Render ProfileDropdown buatanmu jika state bernilai true */}
-          {showDropdown && (
-            <ProfileDropdown 
-              user={user} 
-              onClose={() => setShowDropdown(false)} 
-            />
-          )}
         </div>
 
       </div>
