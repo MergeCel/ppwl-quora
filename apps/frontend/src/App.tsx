@@ -1,25 +1,25 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-
-// Pastikan lokasi import ini sesuai dengan file di laptopmu
-import HomePage from "./HomePage";
+import HomePage from "./HomePage"; 
 import SettingsPage from "./SettingsPage";
 import YourPage from "./pages/YourPage";
 
 function App() {
-  // Dummy user untuk dipassing ke navbar agar tidak error
+  // Dummy user untuk dipassing ke komponen yang membutuhkan data user (misal Navbar/Beranda)
   const dummyUser = { name: "Arjun Maheswara", email: "arjun@mail.com" };
 
   return (
     <Router>
       <Routes>
-        {/* Redirect otomatis dari root ke /home */}
+        {/* Rute awal otomatis dialihkan ke /home */}
         <Route path="/" element={<Navigate to="/home" replace />} />
         
-        {/* Halaman Utama Kelompok */}
+        {/* Rute Beranda */}
         <Route path="/home" element={<HomePage user={dummyUser} />} />
+        
+        {/* Rute Pengaturan */}
         <Route path="/settings" element={<SettingsPage />} />
         
-        {/* INI ROUTE UNTUK HALAMAN FITUR BARUMU */}
+        {/* Rute Fitur Barumu */}
         <Route path="/your-feature" element={<YourPage />} />
       </Routes>
     </Router>
