@@ -7,21 +7,19 @@ import './style/login.css'
 import './style/settings.css'
 import SettingsPage from "./SettingsPage.tsx";
 import HomePage from "./HomePage.tsx";
-import YourPage from "./pages/YourPage.tsx"; // 👈 Impor halaman fitur barumu di sini
+import YourPage from "./pages/YourPage.tsx"; // 👈 Impor halaman fitur barumu
 
-// Menggunakan lazy loading agar file hanya diunduh saat dibutuhkan
 const DefaultApp = lazy(() => import('./LoginPage'))
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      {/* Suspense wajib ada saat menggunakan lazy loading */}
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/home" element={<HomePage />} />
           
-          {/* 🚀 ROUTE RESMI UNTUK HALAMAN FITUR ARJUN */}
+          {/* 🔔 ROUTE HALAMAN NOTIFIKASI */}
           <Route path="/your-feature" element={<YourPage />} />
           
           <Route path="/" element={<DefaultApp />} />
