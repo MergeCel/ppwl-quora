@@ -8,6 +8,7 @@ import {
   Globe,
 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // 👈 Impor useNavigate
 import ProfileDropdown from "./ProfileDropdown";
 
 type TopNavbarProps = {
@@ -18,48 +19,56 @@ type TopNavbarProps = {
 };
 
 export default function TopNavbar({ user }: TopNavbarProps) {
-  // State untuk mengontrol buka-tutup dropdown profil
   const [showDropdown, setShowDropdown] = useState(false);
+  const navigate = useNavigate(); // 👈 Inisialisasi navigasi
 
   return (
     <header className="topnav">
       <div className="topnav-inner">
 
-        {/* Sisi Kiri: Logo Quora */}
-        <div className="topnav-logo">
+        {/* Logo */}
+        <div className="topnav-logo" style={{ cursor: "pointer" }} onClick={() => navigate("/home")}>
           Quora
         </div>
 
-        {/* Sisi Tengah: Menu Navigasi Ikon */}
+        {/* Nav icons */}
         <div className="topnav-nav">
-          <button className="topnav-icon active" title="Beranda">
+          <button className="topnav-icon" title="Beranda" onClick={() => navigate("/home")}>
             <Home size={22} />
           </button>
+
           <button className="topnav-icon" title="Jawabanku">
             <ClipboardList size={22} />
             <div className="notif-dot" />
           </button>
+
           <button className="topnav-icon" title="Tulis">
             <PenSquare size={22} />
           </button>
+
           <button className="topnav-icon" title="Komunitas">
             <Users size={22} />
           </button>
-          <button className="topnav-icon" title="Notifikasi">
+
+          {/* 🚀 TOMBOL NOTIFIKASI SEKARANG MENGARAH KE HALAMAN FITUR NOTIFIKASIMU */}
+          <button 
+            className="topnav-icon" 
+            title="Notifikasi" 
+            onClick={() => navigate("/your-feature")}
+          >
             <Bell size={22} />
             <div className="notif-badge" />
           </button>
         </div>
 
-        {/* Fitur Pencarian */}
+        {/* Search */}
         <div className="topnav-search">
           <Search size={15} className="search-icon" />
           <input type="text" placeholder="Cari Quora" />
         </div>
 
-        {/* Sisi Kanan: KEMBALI KE STRUKTUR ASLI TANPA BUNGKUSAN DIV ANEH */}
+        {/* Right */}
         <div className="topnav-right">
-          
           <button
             className="topnav-avatar"
             onClick={() => setShowDropdown(!showDropdown)}
@@ -75,14 +84,12 @@ export default function TopNavbar({ user }: TopNavbarProps) {
             Tambah pertanyaan
           </button>
 
-          {/* Ditaruh langsung di sini agar CSS right: 90px bawaan Sheren bekerja sempurna */}
           {showDropdown && (
             <ProfileDropdown 
               user={user} 
               onClose={() => setShowDropdown(false)} 
             />
           )}
-
         </div>
 
       </div>
