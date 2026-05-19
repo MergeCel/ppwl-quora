@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const spaces = [
   { name: "Siswa ambis",       color: "#e53e3e", label: "S" },
@@ -17,16 +18,26 @@ function truncate(s: string, n = 14) {
 }
 
 export default function LeftSidebar() {
+  const navigate = useNavigate();
+
   return (
     <aside className="left-sidebar">
-      <button className="create-space-btn">
+      {/* TOMBOL INI SEKARANG MENGARAH KE HALAMAN FITURMU */}
+      <button 
+        className="create-space-btn" 
+        onClick={() => navigate('/your-feature')}
+      >
         <Plus size={15} />
-        <span>Buat Ruang</span>
+        <span>Fitur Arjun</span>
       </button>
 
       <div className="sidebar-space-list">
         {spaces.map((space) => (
-          <button key={space.name} className="sidebar-space-item">
+          <button 
+            key={space.name} 
+            className="sidebar-space-item"
+            onClick={() => navigate('/home')}
+          >
             <div
               className="space-avatar"
               style={{ background: space.color }}
