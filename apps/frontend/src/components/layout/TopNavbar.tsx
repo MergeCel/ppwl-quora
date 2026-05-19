@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import ProfileDropdown from "./ProfileDropdown";
 
 type TopNavbarProps = {
-  user: {
+  user?: {
     name: string;
     email: string;
   };
@@ -58,7 +58,7 @@ export default function TopNavbar({ user }: TopNavbarProps) {
             <Users size={22} />
           </button>
 
-          {/* 🔔 TOMBOL LONCENG NOTIFIKASI YANG SUDAH FIX */}
+          {/* 🔔 TOMBOL LONCENG SEKARANG SUDAH AKTIF TOTAL */}
           <button
             className="topnav-icon"
             title="Notifikasi"
@@ -77,6 +77,7 @@ export default function TopNavbar({ user }: TopNavbarProps) {
 
         {/* Right */}
         <div className="topnav-right">
+          {/* SUNTIKAN SAFE NAVIGATOR (?.) AGAR NAVBAR TIDAK CRASH JIKA USER UNDEFINED */}
           <button
             className="topnav-avatar"
             onClick={() => setShowDropdown(!showDropdown)}
@@ -94,7 +95,7 @@ export default function TopNavbar({ user }: TopNavbarProps) {
 
           {showDropdown && (
             <ProfileDropdown 
-              user={user} 
+              user={user || { name: "User", email: "user@mail.com" }} 
               onClose={() => setShowDropdown(false)} 
             />
           )}
