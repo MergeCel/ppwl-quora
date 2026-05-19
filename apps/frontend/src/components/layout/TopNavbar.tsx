@@ -8,8 +8,8 @@ import {
   Globe,
 } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // 👈 Impor useNavigate
-import ProfileDropdown from "./ProfileDropdown";
+import { useNavigate } from "react-router-dom"; // 👈 Impor navigasi react-router
+import ProfileDropdown from "../profile/ProfileDropdown";
 
 type TopNavbarProps = {
   user: {
@@ -20,20 +20,28 @@ type TopNavbarProps = {
 
 export default function TopNavbar({ user }: TopNavbarProps) {
   const [showDropdown, setShowDropdown] = useState(false);
-  const navigate = useNavigate(); // 👈 Inisialisasi navigasi
+  const navigate = useNavigate(); // 👈 Inisialisasi fungsi navigasi
 
   return (
     <header className="topnav">
       <div className="topnav-inner">
 
         {/* Logo */}
-        <div className="topnav-logo" style={{ cursor: "pointer" }} onClick={() => navigate("/home")}>
+        <div 
+          className="topnav-logo" 
+          style={{ cursor: "pointer" }} 
+          onClick={() => navigate("/home")}
+        >
           Quora
         </div>
 
         {/* Nav icons */}
         <div className="topnav-nav">
-          <button className="topnav-icon" title="Beranda" onClick={() => navigate("/home")}>
+          <button 
+            className="topnav-icon" 
+            title="Beranda" 
+            onClick={() => navigate("/home")}
+          >
             <Home size={22} />
           </button>
 
@@ -50,12 +58,11 @@ export default function TopNavbar({ user }: TopNavbarProps) {
             <Users size={22} />
           </button>
 
-          {/* 🚀 TOMBOL NOTIFIKASI SEKARANG MENGARAH KE HALAMAN FITUR NOTIFIKASIMU */}
-          <button 
-            className="topnav-icon" 
-            title="Notifikasi" 
-            onClick={() => navigate("/your-feature")}
-          >
+          {/* 🚀 SEKARANG TOMBOL LONCENG SUDAH BISA DIPENCET */}
+          <button
+            className="topnav-icon"
+            title="Notifikasi"
+            onClick={() => navigate("/your-feature")} 
             <Bell size={22} />
             <div className="notif-badge" />
           </button>
@@ -73,7 +80,7 @@ export default function TopNavbar({ user }: TopNavbarProps) {
             className="topnav-avatar"
             onClick={() => setShowDropdown(!showDropdown)}
           >
-            {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+            {user.name.charAt(0).toUpperCase()}
           </button>
 
           <button className="topnav-globe">
