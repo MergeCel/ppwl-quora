@@ -1,100 +1,92 @@
+import {
+  Home,
+  ClipboardList,
+  PenSquare,
+  Users,
+  Bell,
+  Search,
+  Globe,
+} from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom"; // Atau pakai 'a' href biasa kalau gak pakai react-router
-import "./TopNavbar.css"; // Sesuaikan dengan style kelompokmu
+import ProfileDropdown from "./ProfileDropdown";
 
-export default function TopNavbar({ user }: { user: any }) {
-  // 1. State buat kontrol dropdown profil terbuka/tertutup
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+type TopNavbarProps = {
+  user: {
+    name: string;
+    email: string;
+  };
+};
+
+export default function TopNavbar({ user }: TopNavbarProps) {
+  // State untuk mengontrol buka-tutup dropdown profil
+  const [showDropdown, setShowDropdown] = useState(false);
 
   return (
-    <header className="top-navbar">
-      {/* ... Sisi kiri navbar (Logo Quora, Search Bar, dll) biarkan tetap ... */}
-      <div className="navbar-left">
-        <span className="logo">Quora</span>
-      </div>
+    <header className="topnav">
+      <div className="topnav-inner">
 
-      {/* ... Sisi kanan navbar (Tempat Foto Profil) ... */}
-      <div className="navbar-right" style={{ position: "relative" }}>
-        
-        {/* Tombol Profil (Avatar) */}
-        <button 
-          className="profile-avatar-btn"
-          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          style={{
-            background: "#7c3aed",
-            color: "white",
-            borderRadius: "50%",
-            width: "40px",
-            height: "40px",
-            cursor: "pointer",
-            border: "none"
-          }}
-        >
-          {user?.name ? user.name[0].toUpperCase() : "U"}
-        </button>
+        {/* Sisi Kiri: Logo Quora */}
+        <div className="topnav-logo">
+          Quora
+        </div>
 
-        {/* 2. UI KOMPONEN DROPDOWN (Hanya muncul kalau isDropdownOpen === true) */}
-        {isDropdownOpen && (
-          <div 
-            className="profile-dropdown-box"
-            style={{
-              position: "absolute",
-              right: 0,
-              top: "50px",
-              background: "white",
-              border: "1px solid #e5e7eb",
-              borderRadius: "8px",
-              boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
-              width: "200px",
-              zIndex: 999,
-              padding: "8px 0"
-            }}
+        {/* Sisi Tengah: Menu Navigasi Ikon */}
+        <div className="topnav-nav">
+          <button className="topnav-icon active" title="Beranda">
+            <Home size={22} />
+          </button>
+
+          <button className="topnav-icon" title="Jawabanku">
+            <ClipboardList size={22} />
+            <div className="notif-dot" />
+          </button>
+
+          <button className="topnav-icon" title="Tulis">
+            <PenSquare size={22} />
+          </button>
+
+          <button className="topnav-icon" title="Komunitas">
+            <Users size={22} />
+          </button>
+
+          <button className="topnav-icon" title="Notifikasi">
+            <Bell size={22} />
+            <div className="notif-badge" />
+          </button>
+        </div>
+
+        {/* Fitur Pencarian */}
+        <div className="topnav-search">
+          <Search size={15} className="search-icon" />
+          <input type="text" placeholder="Cari Quora" />
+        </div>
+
+        {/* Sisi Kanan: Avatar User, Bahasa, dan Tombol Pertanyaan */}
+        <div className="topnav-right">
+          {/* Tombol Avatar yang men-trigger state dropdown */}
+          <button
+            className="topnav-avatar"
+            onClick={() => setShowDropdown(!showDropdown)}
           >
-            {/* Info User Singkat di dalam Dropdown */}
-            <div style={{ padding: "8px 16px", borderBottom: "1px solid #f3f4f6" }}>
-              <p style={{ fontWeight: "bold", color: "#1f2937", margin: 0 }}>{user?.name}</p>
-              <p style={{ fontSize: "12px", color: "#6b7280", margin: 0 }}>{user?.email}</p>
-            </div>
+            {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+          </button>
 
-            {/* LINK MENU MENUJU SETTING */}
-            <Link 
-              to="/settings" 
-              onClick={() => setIsDropdownOpen(false)}
-              style={{
-                display: "block",
-                padding: "10px 16px",
-                color: "#374151",
-                textDecoration: "none",
-                fontSize: "14px"
-              }}
-              className="dropdown-item-hover"
-            >
-              ⚙️ Pengaturan / Setting
-            </Link>
+          <button className="topnav-globe">
+            <Globe size={18} />
+          </button>
 
-            {/* Link Menu Logout */}
-            <button
-              onClick={() => {
-                // Logika logout nanti di sini (hapus token dll)
-                setIsDropdownOpen(false);
-                alert("Logout diklik");
-              }}
-              style={{
-                display: "block",
-                width: "100%",
-                textAlign: "left",
-                padding: "10px 16px",
-                color: "#dc2626",
-                background: "none",
-                border: "none",
-                fontSize: "14px",
-                cursor: "pointer"
-              }}
-            >
-              🚪 Keluar
-            </button>
-          </div>
-        )}
+          <button className="topnav-question-btn">
+            Tambah pertanyaan
+          </button>
+
+          {/* Render ProfileDropdown buatanmu jika state bernilai true */}
+          {showDropdown && (
+            <ProfileDropdown 
+              user={user} 
+              onClose={() => setShowDropdown(false)} 
+            />
+          )}
+        </div>
 
       </div>
     </header>
