@@ -4,6 +4,7 @@ import { cookie } from "@elysiajs/cookie";
 import { jwt } from "@elysiajs/jwt";
 import { cors } from "@elysiajs/cors";
 import { createOAuthClient, getAuthUrl } from "./auth";
+import { dataRoutes } from "./routes/data.route"; // 👈 IMPORT ROUTE DATA BARU
 import type { ApiResponse, HealthCheck, User } from "shared";
 import type { DbClient } from "./types";
 import bcrypt from "bcryptjs"
@@ -38,6 +39,7 @@ export const createApp = (getPrisma: () => DbClient) => {
     )
 
     .use(postRoutes(getPrisma))
+    .use(dataRoutes(getPrisma)) // 👈 GUNAKAN ROUTE DATA DI SINI
 
     .get("/", (): ApiResponse<HealthCheck> => ({
       data: { status: "ok" },
@@ -68,27 +70,6 @@ export const createApp = (getPrisma: () => DbClient) => {
           },
         };
       }
-    })
-
-    // ===============================
-    // GET /users?key=secret (wajib modul)
-    // ===============================
-    .get("/users", async ({ query, set }: any) => {
-      if (query.key !== process.env.SECRET_KEY) {
-        set.status = 403
-        return { message: "Forbidden" }
-      }
-      const users = await getPrisma().user.findMany({
-        select: {
-          id: true,
-          name: true,
-          username: true,
-          email: true,
-          provider: true,
-          created_at: true
-        }
-      })
-      return { data: users, message: "User list retrieved" }
     })
 
     // ===============================
@@ -170,7 +151,7 @@ export const createApp = (getPrisma: () => DbClient) => {
     })
 
     // ===============================
-    // ROUTE LAMA — BIARKAN (Sudah diubah redirectnya)
+    // ROUTE LAMA — BIARKAN
     // ===============================
     .get("/auth/google", ({ redirect }) => {
       const oauth2Client = createOAuthClient();
@@ -186,7 +167,6 @@ export const createApp = (getPrisma: () => DbClient) => {
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token,
       });
-      // Diubah agar kembalinya ke halaman home
       return redirect(`${process.env.FRONTEND_URL}/home?token=${token}`);
     })
 
