@@ -8,8 +8,8 @@ import {
   Globe,
 } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // 👈 Impor navigasi react-router
-import ProfileDropdown from "../profile/ProfileDropdown";
+import { useNavigate } from "react-router-dom";
+import ProfileDropdown from "./ProfileDropdown";
 
 type TopNavbarProps = {
   user: {
@@ -20,7 +20,7 @@ type TopNavbarProps = {
 
 export default function TopNavbar({ user }: TopNavbarProps) {
   const [showDropdown, setShowDropdown] = useState(false);
-  const navigate = useNavigate(); // 👈 Inisialisasi fungsi navigasi
+  const navigate = useNavigate();
 
   return (
     <header className="topnav">
@@ -58,11 +58,12 @@ export default function TopNavbar({ user }: TopNavbarProps) {
             <Users size={22} />
           </button>
 
-          {/* 🚀 SEKARANG TOMBOL LONCENG SUDAH BISA DIPENCET */}
+          {/* 🔔 TOMBOL LONCENG NOTIFIKASI YANG SUDAH FIX */}
           <button
             className="topnav-icon"
             title="Notifikasi"
-            onClick={() => navigate("/your-feature")} 
+            onClick={() => navigate("/your-feature")}
+          >
             <Bell size={22} />
             <div className="notif-badge" />
           </button>
@@ -80,7 +81,7 @@ export default function TopNavbar({ user }: TopNavbarProps) {
             className="topnav-avatar"
             onClick={() => setShowDropdown(!showDropdown)}
           >
-            {user.name.charAt(0).toUpperCase()}
+            {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
           </button>
 
           <button className="topnav-globe">
