@@ -21,47 +21,35 @@ type TopNavbarProps = {
 export default function TopNavbar({ user }: TopNavbarProps) {
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
+  const safeUser = user || { name: "Arjun Maheswara", email: "arjun@hmsi.untan.ac.id" };
 
   return (
     <header className="topnav">
       <div className="topnav-inner">
-
         {/* Logo */}
-        <div 
-          className="topnav-logo" 
-          style={{ cursor: "pointer" }} 
-          onClick={() => navigate("/home")}
-        >
+        <div className="topnav-logo" style={{ cursor: "pointer" }} onClick={() => navigate("/home")}>
           Quora
         </div>
 
-        {/* Nav icons */}
+        {/* Nav Center */}
         <div className="topnav-nav">
-          <button 
-            className="topnav-icon" 
-            title="Beranda" 
-            onClick={() => navigate("/home")}
-          >
+          <button className="topnav-icon" title="Beranda" onClick={() => navigate("/home")}>
             <Home size={22} />
           </button>
-
           <button className="topnav-icon" title="Jawabanku">
             <ClipboardList size={22} />
             <div className="notif-dot" />
           </button>
-
           <button className="topnav-icon" title="Tulis">
             <PenSquare size={22} />
           </button>
-
           <button className="topnav-icon" title="Komunitas">
             <Users size={22} />
           </button>
-
-          {/* 🔔 TOMBOL LONCENG SEKARANG SUDAH AKTIF TOTAL */}
-          <button
-            className="topnav-icon"
-            title="Notifikasi"
+          {/* Tombol Lonceng Fix */}
+          <button 
+            className="topnav-icon" 
+            title="Notifikasi" 
             onClick={() => navigate("/your-feature")}
           >
             <Bell size={22} />
@@ -75,32 +63,18 @@ export default function TopNavbar({ user }: TopNavbarProps) {
           <input type="text" placeholder="Cari Quora" />
         </div>
 
-        {/* Right */}
+        {/* Nav Right */}
         <div className="topnav-right">
-          {/* SUNTIKAN SAFE NAVIGATOR (?.) AGAR NAVBAR TIDAK CRASH JIKA USER UNDEFINED */}
-          <button
-            className="topnav-avatar"
-            onClick={() => setShowDropdown(!showDropdown)}
-          >
-            {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+          <button className="topnav-avatar" onClick={() => setShowDropdown(!showDropdown)}>
+            {safeUser.name.charAt(0).toUpperCase()}
           </button>
-
-          <button className="topnav-globe">
-            <Globe size={18} />
-          </button>
-
-          <button className="topnav-question-btn">
-            Tambah pertanyaan
-          </button>
+          <button className="topnav-globe"><Globe size={18} /></button>
+          <button className="topnav-question-btn">Tambah pertanyaan</button>
 
           {showDropdown && (
-            <ProfileDropdown 
-              user={user || { name: "User", email: "user@mail.com" }} 
-              onClose={() => setShowDropdown(false)} 
-            />
+            <ProfileDropdown user={safeUser} onClose={() => setShowDropdown(false)} />
           )}
         </div>
-
       </div>
     </header>
   );
