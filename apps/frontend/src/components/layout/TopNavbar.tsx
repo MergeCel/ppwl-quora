@@ -1,11 +1,8 @@
 import {
   Home,
-  ClipboardList,
   PenSquare,
-  Users,
   Bell,
   Search,
-  Globe,
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -26,27 +23,17 @@ export default function TopNavbar({ user }: TopNavbarProps) {
   return (
     <header className="topnav">
       <div className="topnav-inner">
-        {/* Logo */}
-        <div className="topnav-logo" style={{ cursor: "pointer" }} onClick={() => navigate("/home")}>
-          Quora
+        {/* Logo Baru (Bukan Quora) */}
+        <div className="topnav-logo" style={{ cursor: "pointer", color: "#e6403b" }} onClick={() => navigate("/home")}>
+          TanyaYuk
         </div>
 
-        {/* Nav Center */}
+        {/* Navigasi (Hanya yang berfungsi) */}
         <div className="topnav-nav">
           <button className="topnav-icon" title="Beranda" onClick={() => navigate("/home")}>
             <Home size={22} />
           </button>
-          <button className="topnav-icon" title="Jawabanku">
-            <ClipboardList size={22} />
-            <div className="notif-dot" />
-          </button>
-          <button className="topnav-icon" title="Tulis">
-            <PenSquare size={22} />
-          </button>
-          <button className="topnav-icon" title="Komunitas">
-            <Users size={22} />
-          </button>
-          {/* Tombol Lonceng Fix */}
+          
           <button 
             className="topnav-icon" 
             title="Notifikasi" 
@@ -60,16 +47,18 @@ export default function TopNavbar({ user }: TopNavbarProps) {
         {/* Search */}
         <div className="topnav-search">
           <Search size={15} className="search-icon" />
-          <input type="text" placeholder="Cari Quora" />
+          <input type="text" placeholder="Cari di TanyaYuk..." />
         </div>
 
-        {/* Nav Right */}
+        {/* Nav Right (Sisa Avatar & Tulis saja) */}
         <div className="topnav-right">
+          <button className="topnav-icon" title="Tulis">
+            <PenSquare size={22} />
+          </button>
+
           <button className="topnav-avatar" onClick={() => setShowDropdown(!showDropdown)}>
             {safeUser.name.charAt(0).toUpperCase()}
           </button>
-          <button className="topnav-globe"><Globe size={18} /></button>
-          <button className="topnav-question-btn">Tambah pertanyaan</button>
 
           {showDropdown && (
             <ProfileDropdown user={safeUser} onClose={() => setShowDropdown(false)} />
