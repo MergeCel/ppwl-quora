@@ -28,7 +28,7 @@ export default function LeftSidebar() {
         onClick={() => navigate('/your-feature')}
       >
         <Plus size={15} />
-        <span>Fitur Arjun</span>
+        <span>Fitur Qarou</span>
       </button>
 
       <div className="sidebar-space-list">
@@ -50,7 +50,7 @@ export default function LeftSidebar() {
       </div>
 
       <div className="sidebar-footer">
-        <span>Tentang Quora</span>
+        <span>Tentang Qarou</span>
         <span>Ketentuan</span>
         <span>Privasi</span>
         <span>Penggunaan</span>

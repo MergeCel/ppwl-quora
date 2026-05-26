@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import ChangePasswordModal from "./modals/ChangePasswordModal.tsx";
-import AddEmailModal from "./modals/AddEmailModal.tsx";
 import LogoutDevicesModal from "./modals/LogoutDevicesModal.tsx";
 
 export default function AccountSettings({
@@ -22,11 +21,15 @@ export default function AccountSettings({
     showEmailModal,
     setShowEmailModal,
   ] = useState(false);
+  const [
+  showLogoutModal,
+  setShowLogoutModal,
+] = useState(false);
 
   const [
-    showLogoutModal,
-    setShowLogoutModal,
-  ] = useState(false);
+  emailVerification,
+  setEmailVerification,
+] = useState(false);
 
   return (
     <section className="settings-section">
@@ -117,7 +120,20 @@ export default function AccountSettings({
               Verifikasi surel diperlukan
             </span>
 
-            <div className="toggle-switch" />
+            <button
+              className={`toggle-switch ${
+                emailVerification
+                  ? "active"
+                  : ""
+              }`}
+              onClick={() =>
+                setEmailVerification(
+                  !emailVerification
+                )
+              }
+            >
+              <div className="toggle-circle" />
+            </button>
           </div>
         </div>
       </div>

@@ -541,3 +541,23 @@ width: 730px;
     display: none;
   }
 }
+
+@media (max-width: 768px) {
+
+  .login-layout {
+    flex-direction: column;
+  }
+
+  .login-left,
+  .login-right {
+    width: 100%;
+  }
+
+  .login-card {
+    width: 100%;
+  }
+
+  .login-buttons {
+    flex-direction: column;
+  }
+}

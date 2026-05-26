@@ -28,7 +28,7 @@ export default function TopNavbar({ user }: TopNavbarProps) {
       <div className="topnav-inner">
         {/* Logo */}
         <div className="topnav-logo" style={{ cursor: "pointer" }} onClick={() => navigate("/home")}>
-          Quora
+          Qarou
         </div>
 
         {/* Nav Center */}
@@ -60,7 +60,7 @@ export default function TopNavbar({ user }: TopNavbarProps) {
         {/* Search */}
         <div className="topnav-search">
           <Search size={15} className="search-icon" />
-          <input type="text" placeholder="Cari Quora" />
+          <input type="text" placeholder="Cari Qarou" />
         </div>
 
         {/* Nav Right */}

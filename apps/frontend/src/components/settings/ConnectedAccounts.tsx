@@ -1,6 +1,4 @@
 import GoogleIcon from "../auth/GoogleButton.tsx";
-import FacebookIcon from "../auth/FacebookButton.tsx";
-
 export default function ConnectedAccounts({
   user,
 }: {
@@ -39,22 +37,6 @@ export default function ConnectedAccounts({
 
           <button className="settings-link">
             Putuskan
-          </button>
-        </div>
-
-      </div>
-
-      <div className="settings-row">
-
-        <div className="connected-platform">
-          <FacebookIcon />
-
-          <span>Facebook</span>
-        </div>
-
-        <div className="settings-value">
-          <button className="settings-link">
-            Sambungkan Akun Facebook
           </button>
         </div>
 

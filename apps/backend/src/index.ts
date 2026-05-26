@@ -107,7 +107,7 @@ export const createApp = (getPrisma: () => DbClient) => {
             data: [
               { id: 1, type: "like", content: "Sheren menyukai postingan Anda tentang AWS RDS", is_read: false, created_at: new Date() },
               { id: 2, type: "comment", content: "Cello mengomentari draf MVC Docker Anda", is_read: true, created_at: new Date() },
-              { id: 3, type: "system", content: "Selamat! Akun Quora Anda berhasil dimigrasi ke Postgres", is_read: false, created_at: new Date() }
+              { id: 3, type: "system", content: "Selamat! Akun Qarou Anda berhasil dimigrasi ke Postgres", is_read: false, created_at: new Date() }
             ],
             message: "Mock notifications returned successfully"
           };

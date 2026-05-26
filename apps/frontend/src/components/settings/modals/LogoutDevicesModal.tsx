@@ -33,9 +33,8 @@ export default function LogoutDevicesModal({
             Anda untuk melanjutkan.
 
             Jika Anda mendaftar
-            Quora menggunakan
-            Facebook atau Google,
-            silakan{" "}
+            Qarou menggunakan
+            Google, silakan{" "}
 
             <span className="modal-link">
               buat sandi akun.

@@ -19,7 +19,7 @@ const backupDummyPosts = [
     id: "dummy-2",
     author: "Arjun Maheswara",
     role: "Staff KWU HMSI UNTAN",
-    content: "Guys, jangan lupa besok kumpul buat bahas progress tugas besar PPWL Quora ya. Semangat tim A2!",
+    content: "Guys, jangan lupa besok kumpul buat bahas progress tugas besar PPWL Qarou ya. Semangat tim A2!",
     image_url: null,
     user: { name: "Arjun Maheswara" }
   }
@@ -78,7 +78,7 @@ export default function HomePage() {
               <PostCard
                 key={post.id}
                 author={post.user?.name || post.author || "Anonim"}
-                role={post.role || "User Quora"}
+                role={post.role || "User Qarou"}
                 time={post.created_at || "Baru saja"}
                 question=""
                 content={post.content}
