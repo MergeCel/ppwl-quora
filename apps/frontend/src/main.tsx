@@ -1,25 +1,28 @@
 import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import './index.css'
+import './style/index.css'
+import './style/home.css'
+import './style/login.css'
+import './style/settings.css'
+import SettingsPage from "./SettingsPage.tsx";
+import HomePage from "./HomePage.tsx";
+import YourPage from "./pages/YourPage.tsx"; // 👈 Impor halaman fitur barumu
 
-// Menggunakan lazy loading agar file hanya diunduh saat dibutuhkan
-const ClassroomApp = lazy(() => import('./App3'))
-const DefaultApp = lazy(() => import('./App2'))
+const DefaultApp = lazy(() => import('./LoginPage'))
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      {/* Suspense wajib ada saat menggunakan lazy loading */}
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
-          {/* Rute untuk /classroom */}
-          <Route path="/classroom" element={<ClassroomApp />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/home" element={<HomePage />} />
           
-          {/* Rute default (index) atau rute lain */}
+          {/* 🔔 ROUTE HALAMAN NOTIFIKASI */}
+          <Route path="/your-feature" element={<YourPage />} />
+          
           <Route path="/" element={<DefaultApp />} />
-          
-          {/* Opsional: Rute 404 jika halaman tidak ditemukan */}
           <Route path="*" element={<DefaultApp />} />
         </Routes>
       </Suspense>

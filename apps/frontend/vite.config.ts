@@ -5,13 +5,6 @@ import path from "path"
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
-  // 1. Muat env file berdasarkan 'mode' (development, production, dll.)
-  // npm run dev -> development, npm run build -> production
-  // process.cwd() adalah direktori akar proyek Anda
-  // .env.[mode].local (Prioritas tertinggi)
-  // .env.[mode]
-  // .env.local
-  // .env (Prioritas terendah)
   const env = loadEnv(mode, process.cwd(), '');
 
   const check = env.VITE_CHECK;
@@ -19,8 +12,7 @@ export default defineConfig(({ mode }) => {
   console.log("Berhasil env:", check)
 
   return {
-    // Sekarang Anda bisa menggunakan variabel env di sini jika butuh, 
-    // misalnya untuk mengganti port secara dinamis:
+    base: '/', // 👈 INI KUNCI BIAR ASSETS-NYA DIBACA DARI ROOT DOMAIN
     build: {
       sourcemap: true
     },
@@ -31,12 +23,16 @@ export default defineConfig(({ mode }) => {
     server: {
       port: Number(env.VITE_PORT) || 5173,
       strictPort: true,
-      // proxy agar tiap fetch("/api"), yang dipanggil backend url
       proxy: {
         "/api": {
           target: env.VITE_BACKEND_URL || "http://localhost:3000",
           changeOrigin: true
         },
+          "/auth": {
+            target: env.VITE_BACKEND_URL || "http://localhost:3000",
+            changeOrigin: true,
+            secure: false
+          },
       }
     }
   }

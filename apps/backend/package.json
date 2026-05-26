@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "bun run --watch src/server.ts",
     "build": "prisma generate && tsdown",
-    "postinstall": "prisma generate",
+    "postinstall": "bunx prisma generate --schema=prisma/schema.prisma",
     "start": "bun --env-file=.env.production dist/index.mjs",
     "dev:turso": "bun --env-file=.env.production src/server.ts",
     "prod:sql": "bunx prisma migrate diff --from-empty --to-schema prisma/schema.prisma --script > baseline.sql",

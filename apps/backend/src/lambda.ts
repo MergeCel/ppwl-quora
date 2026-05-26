@@ -1,76 +1,62 @@
-import { createApp } from "./index";
-import { loadConfig } from "./config";       // SSM loader
-import { getPrisma } from "../prisma/dbPostgre"; // PostgreSQL
+import Elysia, { t } from "elysia"
+import { loadConfig } from "./config"
+import { getPrisma } from "../prisma/dbPostgre"
+import { authRoutes } from "./auth"
 
-let app: ReturnType<typeof createApp>;
+// Load config AWS SSM dulu
+await loadConfig()
 
-export const handler = async (event: any) => {
-  console.log("[EVENT] method:", event.requestContext?.http?.method);
-  console.log("[EVENT] path:", event.rawPath);
-  console.log("[EVENT] headers:", JSON.stringify(event.headers));
-  
-  await loadConfig(); // load SSM sekali, lalu di-cache
+const app = new Elysia()
 
-  if (!app) {
-    app = createApp(getPrisma); // buat app setelah env ready
-  }
+  // =============================
+  // Daftarkan route auth
+  // =============================
+  .use(authRoutes)
 
-  console.log("[DATABASE_URL]:", process.env.DATABASE_URL);
-  console.log("[FRONTEND_URL] env:", process.env.FRONTEND_URL);
-  console.log("[API_KEY] env:", process.env.API_KEY);
-  console.log("[JWT_SECRET] env:", process.env.JWT_SECRET);
+  // =============================
+  // GET /users?key=your-secret-key
+  // =============================
+  .get("/users", async ({ query, set }) => {
+    if (query.key !== process.env.SECRET_KEY) {
+      set.status = 403
+      return { message: "Forbidden" }
+    }
 
-  const frontendUrl = process.env.FRONTEND_URL ?? "http://localhost:5173";
-
-  // Handle preflight OPTIONS langsung di handler — sebelum masuk Elysia
-  // Lambda URL CORS config tidak reliable, jadi kita handle manual
-  if (event.requestContext.http.method === "OPTIONS") {
-    console.log("[OPTIONS] preflight handled for:", event.rawPath);
-    return {
-      statusCode: 204,
-      headers: {
-        "Access-Control-Allow-Origin": frontendUrl,
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Max-Age": "86400",
-      },
-      body: "",
-    };
-  }
-
-  const url = `https://${event.headers.host}${event.rawPath}${event.rawQueryString ? "?" + event.rawQueryString : ""}`;
-
-  const response = await app.handle(
-    new Request(url, {
-      method: event.requestContext.http.method,
-      headers: event.headers,
-      body: event.body
-        ? Buffer.from(event.body, event.isBase64Encoded ? "base64" : "utf8")
-        : undefined,
+    const users = await getPrisma().user.findMany({
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        email: true,
+        provider: true,
+        created_at: true
+      }
     })
-  );
 
-  const resHeaders = Object.fromEntries(response.headers);
+    return users
+  }, {
+    query: t.Object({
+      key: t.String()
+    })
+  })
 
-  // DEBUG — log headers sebelum inject
-  console.log("[RESPONSE] status:", response.status);
-  console.log("[RESPONSE] headers before inject:", JSON.stringify(resHeaders));
+  // =============================
+  // GET /seed?key= (dummy data, hapus setelah testing)
+  // =============================
+  .get("/seed", async ({ query, set }) => {
+    if (query.key !== process.env.SECRET_KEY) {
+      set.status = 403
+      return { message: "Forbidden" }
+    }
 
-  resHeaders["Access-Control-Allow-Origin"] = frontendUrl;
-  resHeaders["Access-Control-Allow-Credentials"] = "true";
+    await getPrisma().post.createMany({
+      data: [
+        { user_id: 1n, content: "Apa pendapat kalian soal AI di 2026?" },
+        { user_id: 1n, content: "Tips belajar pemrograman dari nol" }
+      ]
+    })
 
-  // DEBUG — log headers setelah inject  
-  console.log("[RESPONSE] headers after inject:", JSON.stringify(resHeaders));
+    return { message: "Dummy data berhasil dibuat" }
+  })
 
-  return {
-    statusCode: response.status,
-    headers: {
-      ...Object.fromEntries(response.headers),
-      "Access-Control-Allow-Origin": frontendUrl,
-      "Access-Control-Allow-Credentials": "true",
-    },
-    body: await response.text(),
-    isBase64Encoded: false,
-  };
-};
+export default app

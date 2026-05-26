@@ -1,0 +1,459 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #111111;
+  color: white;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+}
+
+/* ─── TOP NAVBAR ─────────────────────────────────────────────────────────── */
+.topnav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: #262626;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  height: 52px;
+}
+
+.topnav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.topnav-logo {
+  font-family: Georgia, serif;
+  font-size: 30px;
+  font-weight: 700;
+  color: #e6403b;
+  letter-spacing: -0.5px;
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
+.topnav-nav {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-right: 12px;
+}
+
+.topnav-icon {
+  position: relative;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+  height: 52px;
+}
+
+.topnav-icon:hover { color: #e0e0e0; }
+
+.topnav-icon.active {
+  color: #e6403b;
+  border-bottom: 2px solid #e6403b;
+}
+
+.topnav-search {
+  flex: 1;
+  max-width: 340px;
+  position: relative;
+  margin-right: 12px;
+}
+
+.topnav-search input {
+  width: 100%;
+  border-radius: 20px;
+  padding: 7px 14px 7px 36px;
+  color: #ccc;
+  font-size: 0.88rem;
+  outline: none;
+}
+
+.topnav-search input::placeholder { color: #777; }
+.topnav-search input:focus { border-color: rgba(255,255,255,0.25); }
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #777;
+  pointer-events: none;
+}
+
+.topnav-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.topnav-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #555;
+  border: none;
+  color: white;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.topnav-globe {
+  background: transparent;
+  border: none;
+  color: #9f9f9f;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+}
+
+.topnav-globe:hover { color: #e0e0e0; }
+
+.topnav-question-btn {
+  background: #e6403b;
+  border: none;
+  color: white;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 60px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.topnav-question-btn:hover { background: #cc3330; }
+
+/* ─── HOME LAYOUT ─────────────────────────────────────────────────────────── */
+.home-page {
+padding-top: 67px;
+  background: #111111;
+  min-height: 100vh;
+}
+
+.home-layout {
+  width: 100%;
+  max-width: 1060px;
+  margin: 0 auto;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 0 16px;
+}
+
+.feed-section {
+  flex: 1;
+  min-width: 0;
+  max-width: 580px;
+}
+
+/* ─── LEFT SIDEBAR ────────────────────────────────────────────────────────── */
+.left-sidebar {
+  width: 148px;
+  flex-shrink: 0;
+  font-size: 12px;
+}
+
+.create-space-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1e1e1e;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  color: white;
+  padding: 8px 10px;
+  cursor: pointer;
+  margin-bottom: 14px;
+  font-size: 12px;
+  transition: background 0.15s;
+}
+.create-space-btn:hover { background: #252525; }
+
+.sidebar-space-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-space-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: #e5e5e5;
+  padding: 7px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: 12px;
+  text-align: left;
+}
+
+.sidebar-space-item:hover { background: #1f1f1f; }
+
+.space-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #2e69ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  color: white;
+}
+
+.sidebar-footer {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #666;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+/* ─── CREATE POST BOX ─────────────────────────────────────────────────────── */
+.create-post-box {
+  background: #262626;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 14px;
+}
+
+.create-post-top {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.create-post-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ccc;
+  color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.create-post-input {
+  flex: 1;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: transparent;
+  color: #bbb;
+  padding: 0 16px;
+  font-size: 13px;
+  cursor: pointer;
+  height: 40px;
+  text-align: left;
+}
+
+.create-post-actions {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.create-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  padding: 10px 0;
+  color: #c4c4c4;
+  cursor: pointer;
+  font-size: 13px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.create-action-btn:hover { background: rgba(255,255,255,0.04); }
+
+/* ─── POST CARD ───────────────────────────────────────────────────────────── */
+.post-card {
+  background: #262626;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.post-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 14px 14px 0;
+}
+
+.post-header-left {
+  display: flex;
+  gap: 10px;
+}
+
+.post-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #0ea5a4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  color: white;
+}
+
+.post-user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.post-author-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.post-author {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.follow-btn {
+  background: transparent;
+  border: none;
+  color: #4a90d9;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 0;
+}
+
+.post-role {
+  color: #888;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.post-close-btn {
+  background: transparent;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 0 0 8px;
+  line-height: 1;
+}
+.post-close-btn:hover { color: #ccc; }
+
+.post-content {
+  padding: 10px 14px 0;
+}
+
+.post-origin {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #888;
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+
+.post-origin-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: white;
+}
+
+.post-question {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  line-height: 1.4;
+  color: #f0f0f0;
+}
+
+.post-text {
+  color: #d5d5d5;
+  line-height: 1.6;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.post-text .more-link {
+  color: #4a90d9;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.post-image {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  max-height: 440px;
+}
+
+.post-actions {
+  display: flex;
+  gap: 4px;
+  padding: 10px 10px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: #c0c0c0;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 999px;
+  transition: background 0.15s;
+  font-size: 13px;
+}
+
+.action-btn:hover { background: #242424; }
+.action-btn.liked { color: #2e69ff; }
