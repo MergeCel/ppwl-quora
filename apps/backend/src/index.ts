@@ -204,15 +204,57 @@ export const createApp = (getPrisma: () => DbClient) => {
     })
 
     .get("/auth/callback", async ({ query, jwt, redirect }) => {
-      const { code } = query as any;
-      const oauth2Client = createOAuthClient();
-      const { tokens } = await oauth2Client.getToken(code);
-      const token = await jwt.sign({
-        access_token: tokens.access_token,
-        refresh_token: tokens.refresh_token,
-      });
-      return redirect(`${process.env.FRONTEND_URL}/home?token=${token}`);
+  const { code } = query as any
+
+  const oauth2Client = createOAuthClient()
+
+  const { tokens } = await oauth2Client.getToken(code)
+
+  oauth2Client.setCredentials(tokens)
+
+  const response = await fetch(
+    "https://www.googleapis.com/oauth2/v2/userinfo",
+    {
+      headers: {
+        Authorization: `Bearer ${tokens.access_token}`,
+      },
+    }
+  )
+
+  const googleUser: any = await response.json()
+
+  let user = await getPrisma().user.findUnique({
+    where: {
+      email: googleUser.email,
+    },
+  })
+
+  if (!user) {
+    user = await getPrisma().user.create({
+      data: {
+        name: googleUser.name,
+        username:
+          googleUser.email.split("@")[0] +
+          Math.floor(Math.random() * 1000),
+        email: googleUser.email,
+        avatar_url: googleUser.picture,
+        provider: "google",
+        provider_id: googleUser.id,
+      },
     })
+  }
+
+  const token = await jwt.sign({
+    id: user.id.toString(),
+    name: user.name,
+    email: user.email,
+    avatarUrl: user.avatar_url,
+  })
+
+  return redirect(
+    `${process.env.FRONTEND_URL}/home?token=${token}`
+  )
+})
 
     .get("/auth/me", async ({ headers, jwt, set }) => {
       const auth = makeAuthMiddleware(jwt);

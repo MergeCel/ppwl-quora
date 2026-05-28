@@ -1,62 +1,55 @@
-import Elysia, { t } from "elysia"
-import { loadConfig } from "./config"
+import { createApp } from "./index"
 import { getPrisma } from "../prisma/dbPostgre"
-import { authRoutes } from "./auth"
 
-// Load config AWS SSM dulu
-await loadConfig()
+const app = createApp(getPrisma)
 
-const app = new Elysia()
+export const handler = async (event: any) => {
+  try {
+    console.log("LAMBDA START")
 
-  // =============================
-  // Daftarkan route auth
-  // =============================
-  .use(authRoutes)
+    const method =
+      event.requestContext?.http?.method ||
+      event.httpMethod ||
+      "GET"
 
-  // =============================
-  // GET /users?key=your-secret-key
-  // =============================
-  .get("/users", async ({ query, set }) => {
-    if (query.key !== process.env.SECRET_KEY) {
-      set.status = 403
-      return { message: "Forbidden" }
-    }
+    const path =
+      event.rawPath ||
+      event.path ||
+      "/"
 
-    const users = await getPrisma().user.findMany({
-      select: {
-        id: true,
-        name: true,
-        username: true,
-        email: true,
-        provider: true,
-        created_at: true
+    const queryString = event.rawQueryString
+      ? `?${event.rawQueryString}`
+      : ""
+
+    const request = new Request(
+      `https://${event.requestContext.domainName}${path}${queryString}`,
+      {
+        method,
+        headers: event.headers,
+        body:
+          method !== "GET" && method !== "HEAD"
+            ? event.body
+            : undefined,
       }
-    })
+    )
 
-    return users
-  }, {
-    query: t.Object({
-      key: t.String()
-    })
-  })
+    const response = await app.handle(request)
 
-  // =============================
-  // GET /seed?key= (dummy data, hapus setelah testing)
-  // =============================
-  .get("/seed", async ({ query, set }) => {
-    if (query.key !== process.env.SECRET_KEY) {
-      set.status = 403
-      return { message: "Forbidden" }
+    return {
+      statusCode: response.status,
+      headers: Object.fromEntries(response.headers.entries()),
+      body: await response.text(),
     }
+  } catch (err: any) {
+    console.error("LAMBDA ERROR:", err)
+    console.error(err?.stack)
 
-    await getPrisma().post.createMany({
-      data: [
-        { user_id: 1n, content: "Apa pendapat kalian soal AI di 2026?" },
-        { user_id: 1n, content: "Tips belajar pemrograman dari nol" }
-      ]
-    })
-
-    return { message: "Dummy data berhasil dibuat" }
-  })
-
-export default app
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: "Internal Server Error",
+        error: err?.message || String(err),
+      }),
+    }
+  }
+}
