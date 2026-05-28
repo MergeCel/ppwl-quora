@@ -544,3 +544,21 @@ width: 730px;
     flex-direction: column;
   }
 }
+
+.email-register-btn {
+  width: 100%;
+  height: 42px;
+  margin-top: 12px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s ease;
+}
+
+.email-register-btn:hover {
+  background: #262626;
+}
