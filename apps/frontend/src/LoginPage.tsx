@@ -139,11 +139,11 @@ export default function LoginPage() {
             </div>
           </div>
           <div className="lp-footer-wrapper">
-            <footer className="lp-footer">
+            {/* <footer className="lp-footer">
               <a href="#">Tentang Kami</a> · <a href="#">Karier</a> ·{" "}
               <a href="#">Privasi</a> · <a href="#">Ketentuan</a> ·{" "}
               <a href="#">Kontak</a> · <a href="#">Bahasa</a> ·{" "}
-            </footer>
+            </footer> */}
           </div>
         </main>
       </div>
