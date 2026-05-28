@@ -69,8 +69,11 @@ export default function TopNavbar({ user }: TopNavbarProps) {
             {safeUser.name.charAt(0).toUpperCase()}
           </button>
           <button className="topnav-globe"><Globe size={18} /></button>
-          <button className="topnav-question-btn">Tambah pertanyaan</button>
-
+          <button className="topnav-question-btn">
+            {window.innerWidth <= 768
+              ? "Tanya"
+              : "Tambah pertanyaan"}
+          </button>
           {showDropdown && (
             <ProfileDropdown user={safeUser} onClose={() => setShowDropdown(false)} />
           )}
