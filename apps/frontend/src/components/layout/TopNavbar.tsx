@@ -1,8 +1,11 @@
 import {
   Home,
+  ClipboardList,
   PenSquare,
+  Users,
   Bell,
   Search,
+  Globe,
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,9 +26,9 @@ export default function TopNavbar({ user }: TopNavbarProps) {
   return (
     <header className="topnav">
       <div className="topnav-inner">
-        {/* Logo Baru */}
-        <div className="topnav-logo" style={{ cursor: "pointer", color: "#e6403b" }} onClick={() => navigate("/home")}>
-          TanyaYuk
+        {/* Logo */}
+        <div className="topnav-logo" style={{ cursor: "pointer" }} onClick={() => navigate("/home")}>
+          Qarou
         </div>
 
         {/* Navigasi Inti */}
@@ -33,7 +36,6 @@ export default function TopNavbar({ user }: TopNavbarProps) {
           <button className="topnav-icon" title="Beranda" onClick={() => navigate("/home")}>
             <Home size={22} />
           </button>
-          
           <button 
             className="topnav-icon" 
             title="Notifikasi" 
@@ -47,7 +49,7 @@ export default function TopNavbar({ user }: TopNavbarProps) {
         {/* Search */}
         <div className="topnav-search">
           <Search size={15} className="search-icon" />
-          <input type="text" placeholder="Cari di TanyaYuk..." />
+          <input type="text" placeholder="Cari Qarou" />
         </div>
 
         {/* Nav Right (Diberikan class 'relative' agar dropdown mengacu pada posisi container ini) */}
@@ -59,8 +61,12 @@ export default function TopNavbar({ user }: TopNavbarProps) {
           <button className="topnav-avatar" onClick={() => setShowDropdown(!showDropdown)}>
             {safeUser.name.charAt(0).toUpperCase()}
           </button>
-
-          {/* Menampilkan dropdown profil dengan pengkondisian posisi */}
+          <button className="topnav-globe"><Globe size={18} /></button>
+          <button className="topnav-question-btn">
+            {window.innerWidth <= 768
+              ? "Tanya"
+              : "Tambah pertanyaan"}
+          </button>
           {showDropdown && (
             <div style={{ position: "absolute", right: 0, top: "100%", zIndex: 50 }}>
               <ProfileDropdown user={safeUser} onClose={() => setShowDropdown(false)} />
