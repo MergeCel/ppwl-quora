@@ -40,16 +40,33 @@ export default function ChangePasswordModal({
         </div>
 
         <div className="modal-footer">
-          <button
-            className="modal-cancel"
-            onClick={onClose}
-          >
-            Batal
-          </button>
 
-          <button className="modal-submit">
-            Selesai
-          </button>
+        <button
+          className="modal-cancel"
+          onClick={onClose}
+        >
+          Batal
+        </button>
+
+        <button
+          className="save-btn"
+          onClick={() => {
+
+            localStorage.setItem(
+              "password",
+              "dummy-password"
+            );
+
+            alert(
+              "Sandi berhasil diperbarui"
+            );
+
+            onClose();
+
+          }}
+        >
+          Simpan
+        </button>
         </div>
       </div>
     </div>
