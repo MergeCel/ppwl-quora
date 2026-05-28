@@ -10,15 +10,9 @@ export default function ConnectedAccounts({
     <section className="settings-section">
 
       <div className="settings-section-header">
-
         <h2>
           Akun & Kontak yang Terhubung
         </h2>
-
-        <button className="settings-link">
-          Pelajari lebih lanjut
-        </button>
-
       </div>
 
       <div className="settings-row">
@@ -50,19 +44,12 @@ export default function ConnectedAccounts({
 
 <span>Google</span>
         </div>
-
         <div className="settings-value">
           <p>
             {user.email}
           </p>
-
-          <button className="settings-link">
-            Putuskan
-          </button>
         </div>
-
       </div>
-
     </section>
   );
 }
