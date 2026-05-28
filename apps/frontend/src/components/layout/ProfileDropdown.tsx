@@ -96,7 +96,7 @@ export default function ProfileDropdown({
         >
           Setelan
         </button>
-
+        
         <button className="profile-dropdown-simple">
           Bahasa
         </button>

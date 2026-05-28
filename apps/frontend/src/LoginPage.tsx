@@ -60,7 +60,7 @@ export default function LoginPage() {
   };
 
   const handleGoogleOAuth = () => {
-    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/login`;
+    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google`;
   };
 
   const handleRegisterSuccess = (email: string) => {
