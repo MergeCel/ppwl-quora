@@ -109,35 +109,6 @@ export default function AccountSettings({
         </div>
       </div>
 
-      <div className="settings-row">
-        <div className="settings-label">
-          Keamanan masuk
-        </div>
-
-        <div className="settings-value">
-          <div className="toggle-wrap">
-            <span>
-              Verifikasi surel diperlukan
-            </span>
-
-            <button
-              className={`toggle-switch ${
-                emailVerification
-                  ? "active"
-                  : ""
-              }`}
-              onClick={() =>
-                setEmailVerification(
-                  !emailVerification
-                )
-              }
-            >
-              <div className="toggle-circle" />
-            </button>
-          </div>
-        </div>
-      </div>
-
       {showPasswordModal && (
         <ChangePasswordModal
           onClose={() =>

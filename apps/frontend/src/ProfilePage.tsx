@@ -1,12 +1,10 @@
 import TopNavbar from "./components/layout/TopNavbar";
+import EditNameModal from "./components/profile/EditNameModal";
 import "./style/profile.css";
 import { useRef, useState } from "react";
 
 export default function ProfilePage() {
-  const [avatar, setAvatar] =
-    useState<string | null>(null);
-  const fileInputRef =
-    useRef<HTMLInputElement>(null);
+
   const user = {
     name:
       localStorage.getItem("name")
@@ -16,6 +14,20 @@ export default function ProfilePage() {
       localStorage.getItem("email")
       || "user@gmail.com",
   };
+
+  const [avatar, setAvatar] =
+    useState<string | null>(null);
+
+  const fileInputRef =
+    useRef<HTMLInputElement>(null);
+
+  const [showEditName,
+  setShowEditName] =
+    useState(false);
+
+  const [displayName,
+  setDisplayName] =
+    useState(user.name);
 
   return (
     <div className="profile-page">
@@ -66,33 +78,41 @@ export default function ProfilePage() {
             </div>
 
           <div className="profile-info">
-
-            <h1>{user.name}</h1>
-
+            <h1
+            onClick={() =>
+                setShowEditName(true)
+            }
+            style={{ cursor: "pointer" }}
+            >
+            {displayName}
+            </h1>
             <p>
               Tambahkan kredensial profil
             </p>
-
             <span>
               0 pengikut · Mengikuti 1
             </span>
-
           </div>
-
         </div>
 
         <div className="profile-section">
-
           <h2>Profil</h2>
-
           <div className="empty-profile">
             Anda belum membagikan apa pun.
           </div>
-
         </div>
-
       </div>
-
+      {showEditName && (
+        <EditNameModal
+            currentName={displayName}
+            onClose={() =>
+            setShowEditName(false)
+            }
+            onSave={(newName) =>
+            setDisplayName(newName)
+            }
+        />
+        )}
     </div>
   );
 }
