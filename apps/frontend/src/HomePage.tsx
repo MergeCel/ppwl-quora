@@ -11,7 +11,7 @@ const backupDummyPosts = [
     id: "dummy-1",
     author: "Alpraditia Malik",
     role: "Author di Lawangsinau · Diperbarui 20 Apr",
-    content: "Saya sebelum baca buku: Goblog, ga pede, miskin, gampang emosian. Setelah baca buku jadi lebih terarah. Apa pendapat kalian soal membaca di tahun 2026 ini?",
+    content: "Saya sebelum baca buku, tapi setelah baca buku jadi lebih terarah. Apa pendapat kalian soal membaca di tahun 2026 ini?",
     image_url: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=700&q=80",
     user: { name: "Alpraditia Malik" }
   },
@@ -19,7 +19,7 @@ const backupDummyPosts = [
     id: "dummy-2",
     author: "Arjun Maheswara",
     role: "Staff KWU HMSI UNTAN",
-    content: "Guys, jangan lupa besok kumpul buat bahas progress tugas besar PPWL Quora ya. Semangat tim A2!",
+    content: "Guys, jangan lupa besok kumpul buat bahas progress tugas besar PPWL Qarou ya. Semangat tim A2!",
     image_url: null,
     user: { name: "Arjun Maheswara" }
   }
@@ -78,7 +78,7 @@ export default function HomePage() {
               <PostCard
                 key={post.id}
                 author={post.user?.name || post.author || "Anonim"}
-                role={post.role || "User Quora"}
+                role={post.role || "User Qarou"}
                 time={post.created_at || "Baru saja"}
                 question=""
                 content={post.content}

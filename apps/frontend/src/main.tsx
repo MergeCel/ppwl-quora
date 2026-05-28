@@ -7,6 +7,7 @@ import './style/login.css'
 import './style/settings.css'
 import SettingsPage from "./SettingsPage.tsx";
 import HomePage from "./HomePage.tsx";
+import ProfilePage from "./ProfilePage.tsx";
 import YourPage from "./pages/YourPage.tsx"; // 👈 Impor halaman fitur barumu
 
 const DefaultApp = lazy(() => import('./LoginPage'))
@@ -18,7 +19,7 @@ createRoot(document.getElementById('root')!).render(
         <Routes>
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/home" element={<HomePage />} />
-          
+          <Route path="/profile" element={<ProfilePage />} />
           {/* 🔔 ROUTE HALAMAN NOTIFIKASI */}
           <Route path="/your-feature" element={<YourPage />} />
           

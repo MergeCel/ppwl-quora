@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import ChangePasswordModal from "./modals/ChangePasswordModal.tsx";
-import AddEmailModal from "./modals/AddEmailModal.tsx";
 import LogoutDevicesModal from "./modals/LogoutDevicesModal.tsx";
 
 export default function AccountSettings({
@@ -22,11 +21,15 @@ export default function AccountSettings({
     showEmailModal,
     setShowEmailModal,
   ] = useState(false);
+  const [
+  showLogoutModal,
+  setShowLogoutModal,
+] = useState(false);
 
   const [
-    showLogoutModal,
-    setShowLogoutModal,
-  ] = useState(false);
+  emailVerification,
+  setEmailVerification,
+] = useState(false);
 
   return (
     <section className="settings-section">
@@ -103,22 +106,6 @@ export default function AccountSettings({
           >
             Keluar dari semua peramban lain
           </button>
-        </div>
-      </div>
-
-      <div className="settings-row">
-        <div className="settings-label">
-          Keamanan masuk
-        </div>
-
-        <div className="settings-value">
-          <div className="toggle-wrap">
-            <span>
-              Verifikasi surel diperlukan
-            </span>
-
-            <div className="toggle-switch" />
-          </div>
         </div>
       </div>
 

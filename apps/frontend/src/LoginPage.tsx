@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import "./style/login.css";
 
 import GoogleButton from "./components/auth/GoogleButton.tsx";
-import FacebookButton from "./components/auth/FacebookButton.tsx";
 import RegisterModal from "./components/auth/RegisterModal.tsx";
 import OtpModal from "./components/auth/OtpModal.tsx";
 
@@ -74,7 +73,7 @@ export default function LoginPage() {
     <>
       <div className="lp-root">
         <main className="lp-card">
-          <div className="lp-logo">Quora</div>
+          <div className="lp-logo">Qarou</div>
           <div className="lp-lang">Bahasa Indonesia</div>
           <div className="lp-tagline">
             Tempat berbagi pengetahuan dan memahami dunia lebih baik
@@ -86,16 +85,12 @@ export default function LoginPage() {
                 Dengan melanjutkan, Anda menunjukkan bahwa Anda
                 menyetujui{" "}
                 <a href="#">Persyaratan Layanan</a> dan{" "}
-                <a href="#">Kebijakan Privasi</a> Quora.
+                <a href="#">Kebijakan Privasi</a> Qarou.
               </p>
               <GoogleButton
                 label="Lanjutkan dengan Google"
                 onClick={handleGoogleOAuth}
               />
-              <FacebookButton label="Lanjutkan dengan Facebook" />
-              <a className="register-link" onClick={() => setShowRegister(true)}>
-                Daftar dengan surel
-              </a>
             </div>
 
             <div className="lp-divider" />
@@ -128,9 +123,6 @@ export default function LoginPage() {
               </div>
               {error && <p className="error-msg">{error}</p>}
               <div className="login-bottom">
-                <button className="forgot-link" type="button">
-                  Lupa kata sandi?
-                </button>
                 <button className="btn-primary" onClick={handleLogin}>
                   Masuk
                 </button>
@@ -138,12 +130,10 @@ export default function LoginPage() {
             </div>
           </div>
           <div className="lp-footer-wrapper">
-            <button className="lang-toggle">English ›</button>
             <footer className="lp-footer">
               <a href="#">Tentang Kami</a> · <a href="#">Karier</a> ·{" "}
               <a href="#">Privasi</a> · <a href="#">Ketentuan</a> ·{" "}
               <a href="#">Kontak</a> · <a href="#">Bahasa</a> ·{" "}
-              <a href="#">Pers</a> · © Quora, Inc. 2026
             </footer>
           </div>
         </main>
