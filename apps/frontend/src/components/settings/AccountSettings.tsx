@@ -66,9 +66,34 @@ export default function AccountSettings({
                 className="form-input"
               />
 
-              <button className="add-email-btn">
+              <button
+                className="add-email-btn"
+                onClick={() => {
+
+                  const input =
+                    document.querySelector(
+                      ".form-input"
+                    ) as HTMLInputElement;
+
+                  if (!input.value) return;
+
+                  localStorage.setItem(
+                    "email",
+                    input.value
+                  );
+
+                  alert(
+                    "Surel berhasil diperbarui"
+                  );
+
+                  setShowEmailModal(false);
+
+                  window.location.reload();
+
+                }}
+              >
                 Tambah Surel
-              </button>
+</button>
 
             </div>
           )}
