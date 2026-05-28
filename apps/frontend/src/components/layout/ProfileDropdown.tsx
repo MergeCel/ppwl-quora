@@ -70,24 +70,10 @@ export default function ProfileDropdown({
           <span>Draf</span>
         </button>
 
-        <button className="profile-dropdown-item">
-          <BarChart3 size={18} />
-          <span>Konten & statistik Anda</span>
-        </button>
-
       </div>
 
       {/* SETTINGS */}
       <div className="profile-dropdown-section">
-
-        <button className="profile-dropdown-simple">
-          Mode gelap
-
-          <span className="auto-badge">
-            Otomatis
-          </span>
-        </button>
-
         <button
           className="profile-dropdown-simple"
           onClick={() =>
@@ -96,23 +82,24 @@ export default function ProfileDropdown({
         >
           Setelan
         </button>
-        
-        <button className="profile-dropdown-simple">
-          Bahasa
-        </button>
 
-        <button className="profile-dropdown-simple">
-          Bantuan
-        </button>
-
-        <button className="profile-dropdown-simple logout">
+        <button
+          className="profile-dropdown-simple logout"
+          onClick={() => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            localStorage.removeItem("name");
+            localStorage.removeItem("email");
+            navigate("/login");
+          }}
+        >
           Keluar
         </button>
 
       </div>
 
       {/* FOOTER */}
-      <div className="profile-dropdown-footer">
+      {/* <div className="profile-dropdown-footer">
 
         <span>Tentang Qarou</span>
         <span>·</span>
@@ -131,7 +118,7 @@ export default function ProfileDropdown({
 
         <span>Karier</span>
 
-      </div>
+      </div> */}
 
     </div>
   );
