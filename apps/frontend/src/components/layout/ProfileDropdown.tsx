@@ -1,109 +1,62 @@
-import {
-  MessageSquareText,
-  Bookmark,
-  FilePenLine,
-  BarChart3,
-  ChevronRight,
-} from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 
 type ProfileDropdownProps = {
-  onClose?: () => void;
   user: {
     name: string;
     email: string;
   };
+  onClose: () => void;
 };
 
-export default function ProfileDropdown({
-  onClose,
-  user,
-}: ProfileDropdownProps) {
-  const navigate = useNavigate();
-
+export default function ProfileDropdown({ user, onClose }: ProfileDropdownProps) {
   return (
-    <div className="profile-dropdown">
-      {/* HEADER */}
-      <div className="profile-dropdown-header">
-        <div className="profile-dropdown-user">
-          <div className="profile-dropdown-avatar">
-            {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
-          </div>
-          <div>
-            <h3>{user?.name || "User"}</h3>
-          </div>
+    <>
+      {/* Overlay tak terlihat untuk menutup dropdown jika klik di luar */}
+      <div className="fixed inset-0 z-40" onClick={onClose} />
+
+      {/* Container Menu Dropdown */}
+      <div className="absolute right-0 mt-2 w-64 rounded-xl bg-zinc-900 border border-zinc-800 p-3 shadow-2xl z-50 flex flex-col gap-1.5 text-zinc-200 text-left animate-in fade-in slide-in-from-top-2 duration-150">
+        
+        {/* Detail Pengguna */}
+        <div className="flex flex-col border-b border-zinc-800 pb-2.5 mb-1 px-2">
+          <span className="font-semibold text-white text-sm truncate">{user.name}</span>
+          <span className="text-xs text-zinc-400 truncate">{user.email}</span>
         </div>
-        <ChevronRight size={18} />
-      </div>
 
-      {/* MENU TOP */}
-      <div className="profile-dropdown-section">
-        <button className="profile-dropdown-item">
-          <MessageSquareText size={18} />
-          <span>Pesan</span>
+        {/* Menu Navigasi (Berbaris rapi ke bawah karena flex-col) */}
+        <button className="w-full text-left px-2.5 py-2 text-sm hover:bg-zinc-800 rounded-lg transition-colors flex items-center">
+          💬 Pesan
         </button>
-        <button className="profile-dropdown-item">
-          <Bookmark size={18} />
-          <span>Daftar Bacaan</span>
+        <button className="w-full text-left px-2.5 py-2 text-sm hover:bg-zinc-800 rounded-lg transition-colors flex items-center">
+          🔖 Daftar Bacaan
         </button>
-        <button className="profile-dropdown-item">
-          <FilePenLine size={18} />
-          <span>Draf</span>
+        <button className="w-full text-left px-2.5 py-2 text-sm hover:bg-zinc-800 rounded-lg transition-colors flex items-center">
+          📝 Draf
         </button>
-        <button className="profile-dropdown-item">
-          <BarChart3 size={18} />
-          <span>Konten & statistik Anda</span>
+        <button className="w-full text-left px-2.5 py-2 text-sm hover:bg-zinc-800 rounded-lg transition-colors flex items-center">
+          📊 Konten & Statistik Anda
         </button>
-      </div>
+        
+        <div className="border-t border-zinc-800 my-1" />
 
-      {/* SETTINGS */}
-      <div className="profile-dropdown-section">
-        <button className="profile-dropdown-simple">
-          Mode gelap
-          <span className="auto-badge">Otomatis</span>
+        <button className="w-full text-left px-2.5 py-2 text-sm hover:bg-zinc-800 rounded-lg transition-colors flex items-center justify-between">
+          <span>🌙 Mode Gelap</span>
+          <span className="text-xs bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-400">Otomatis</span>
         </button>
-
-        <button
-          className="profile-dropdown-simple"
-          onClick={() => {
-            navigate("/settings");
-            if (onClose) onClose();
-          }}
-        >
-          Setelan
+        
+        <button className="w-full text-left px-2.5 py-2 text-sm hover:bg-zinc-800 rounded-lg transition-colors flex items-center">
+          ⚙️ Setelan
+        </button>
+        <button className="w-full text-left px-2.5 py-2 text-sm hover:bg-zinc-800 rounded-lg transition-colors flex items-center">
+          🌐 Bahasa
         </button>
 
-        <button className="profile-dropdown-simple">
-          Bahasa
-        </button>
-        <button className="profile-dropdown-simple">
-          Bantuan
-        </button>
-        <button 
-          className="profile-dropdown-simple logout"
-          onClick={() => {
-            if (onClose) onClose();
-            alert("Keluar dari aplikasi");
-          }}
-        >
-          Keluar
+        <div className="border-t border-zinc-800 my-1" />
+
+        <button className="w-full text-left px-2.5 py-2 text-sm text-red-400 hover:bg-red-950/30 rounded-lg transition-colors flex items-center">
+          🚪 Bantuan & Keluar
         </button>
       </div>
-
-      {/* FOOTER */}
-      <div className="profile-dropdown-footer">
-        <span>Tentang Quora</span>
-        <span>·</span>
-        <span>Ketentuan</span>
-        <span>·</span>
-        <span>Privasi</span>
-        <span>·</span>
-        <span>Penggunaan Dapat Diterima</span>
-        <span>·</span>
-        <span>Beriklan</span>
-        <span>·</span>
-        <span>Karier</span>
-      </div>
-    </div>
+    </>
   );
 }
