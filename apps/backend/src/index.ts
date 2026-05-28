@@ -27,7 +27,11 @@ const makeAuthMiddleware =
 
 export const createApp = (getPrisma: () => DbClient) => {
   const app = new Elysia()
-    .use(cors())
+    .use(cors({
+      origin: ["http://localhost:5173", "https://ppwl-a2.store"],
+      allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"],
+      credentials: true,
+    }))
     .use(cookie())
     .use(
       jwt({

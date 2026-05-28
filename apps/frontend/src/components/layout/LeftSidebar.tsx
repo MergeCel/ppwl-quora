@@ -12,7 +12,6 @@ const spaces = [
   { name: "Kuliah di Luar...",  color: "#2e69ff", label: "K" },
 ];
 
-// truncate to ~14 chars for sidebar display
 function truncate(s: string, n = 14) {
   return s.length > n ? s.slice(0, n - 2) + ".." : s;
 }
@@ -22,10 +21,10 @@ export default function LeftSidebar() {
 
   return (
     <aside className="left-sidebar">
-      {/* TOMBOL INI SEKARANG MENGARAH KE HALAMAN FITURMU */}
+      {/* FIXED: Mengarah ke /notifications sesuai route di App.tsx */}
       <button 
         className="create-space-btn" 
-        onClick={() => navigate('/your-feature')}
+        onClick={() => navigate('/notifications')}
       >
         <Plus size={15} />
         <span>Fitur Arjun</span>
