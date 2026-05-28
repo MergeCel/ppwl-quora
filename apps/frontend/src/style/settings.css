@@ -92,10 +92,15 @@
   justify-content: space-between;
   align-items: center;
   padding: 14px 0 12px;
+  border-bottom: 1px solid
+    rgba(255,255,255,0.08);
+  margin-top: 18px;
 }
 
 .settings-section-header h2 {
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: white;
 }
 
 /* rows */
@@ -103,8 +108,9 @@
 .settings-row {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
   gap: 14px;
-  padding: 10px 0;
+  padding: 14px 0;
   border-bottom: 1px solid
     rgba(255, 255, 255, 0.08);
 }
@@ -160,6 +166,9 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  background: transparent;
+  border: none;
+  
 }
 
 .google-icon {
@@ -167,6 +176,9 @@
   align-items: center;
   justify-content: center;
   font-size: 18px;
+  background: transparent;
+  border: none;
+  padding: 0;
 }
 
 /* responsive */
