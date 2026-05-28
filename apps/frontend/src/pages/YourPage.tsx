@@ -13,20 +13,20 @@ type NotificationItem = {
 
 export default function YourPage() {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true); // 👈 State untuk animasi loading
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // 🚀 Simulasi ambil data pakai setTimeout (Sesuai instruksi asdos)
+    // Sesuai instruksi asdos: pakai dummy + timeout
     const timer = setTimeout(() => {
       setNotifications([
         { id: 1, type: "like", content: "Sheren menyukai postingan Anda tentang MVC", is_read: false, created_at: new Date().toISOString() },
         { id: 2, type: "comment", content: "Cello mengomentari tugas Frontend Anda", is_read: true, created_at: new Date().toISOString() },
         { id: 3, type: "system", content: "Selamat datang di TanyaYuk!", is_read: false, created_at: new Date().toISOString() }
       ]);
-      setIsLoading(false); // Matikan loading setelah 1.5 detik
+      setIsLoading(false);
     }, 1500);
 
-    return () => clearTimeout(timer); // Cleanup timeout
+    return () => clearTimeout(timer);
   }, []);
 
   const renderIcon = (type: string) => {
@@ -49,7 +49,6 @@ export default function YourPage() {
             <h2 style={{ color: "white" }}>Notifikasi Anda</h2>
           </div>
 
-          {/* 🚀 LOGIKA UI/UX LOADING */}
           {isLoading ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 0", color: "#888" }}>
               <Loader2 className="animate-spin" size={32} style={{ marginBottom: "10px", color: "#e6403b" }} />

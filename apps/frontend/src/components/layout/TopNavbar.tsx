@@ -23,12 +23,12 @@ export default function TopNavbar({ user }: TopNavbarProps) {
   return (
     <header className="topnav">
       <div className="topnav-inner">
-        {/* Logo Baru (Bukan Quora) */}
+        {/* Logo Baru */}
         <div className="topnav-logo" style={{ cursor: "pointer", color: "#e6403b" }} onClick={() => navigate("/home")}>
           TanyaYuk
         </div>
 
-        {/* Navigasi (Hanya yang berfungsi) */}
+        {/* Navigasi Inti */}
         <div className="topnav-nav">
           <button className="topnav-icon" title="Beranda" onClick={() => navigate("/home")}>
             <Home size={22} />
@@ -50,7 +50,7 @@ export default function TopNavbar({ user }: TopNavbarProps) {
           <input type="text" placeholder="Cari di TanyaYuk..." />
         </div>
 
-        {/* Nav Right (Sisa Avatar & Tulis saja) */}
+        {/* Nav Right */}
         <div className="topnav-right">
           <button className="topnav-icon" title="Tulis">
             <PenSquare size={22} />
