@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import TopNavbar from "../components/layout/TopNavbar";
-import LeftSidebar from "../components/layout/LeftSidebar";
-import { Bell, Heart, MessageCircle, AlertCircle, Loader2 } from "lucide-react";
+import { Bell, Heart, MessageCircle, AlertCircle, Loader2, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 type NotificationItem = {
   id: number;
@@ -14,6 +13,7 @@ type NotificationItem = {
 export default function YourPage() {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Sesuai instruksi asdos: pakai dummy + timeout
@@ -38,15 +38,20 @@ export default function YourPage() {
   };
 
   return (
-    <div className="home-page" style={{ background: "#111", minHeight: "100vh" }}>
-      <TopNavbar />
-      <div className="home-layout">
-        <LeftSidebar />
-        
-        <main className="feed-section" style={{ background: "#1b1b1b", borderRadius: "8px", padding: "20px", marginTop: "20px" }}>
+    <div className="home-page" style={{ background: "#111", minHeight: "100vh", padding: "20px" }}>
+      {/* Tombol Kembali Darurat ke Home */}
+      <button 
+        onClick={() => navigate("/home")}
+        style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "#888", cursor: "pointer", marginBottom: "20px", fontSize: "14px" }}
+      >
+        <ArrowLeft size={16} /> Kembali ke Beranda
+      </button>
+
+      <div style={{ maxWidth: "600px", margin: "0 auto" }}>
+        <main className="feed-section" style={{ background: "#1b1b1b", borderRadius: "8px", padding: "20px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
             <Bell size={24} color="#e6403b" />
-            <h2 style={{ color: "white" }}>Notifikasi Anda</h2>
+            <h2 style={{ color: "white", margin: 0 }}>Notifikasi Anda</h2>
           </div>
 
           {isLoading ? (

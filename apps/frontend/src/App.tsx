@@ -5,7 +5,7 @@ import YourPage from "./pages/YourPage";
 
 function App() {
   // Dummy user untuk dipassing ke komponen yang membutuhkan data user (misal Navbar/Beranda)
-  const dummyUser = { name: "Arjun Maheswara", email: "arjun@mail.com" };
+  const dummyUser = { name: "Arjun Maheswara", email: "arjun@hmsi.untan.ac.id" };
 
   return (
     <Router>
@@ -19,8 +19,8 @@ function App() {
         {/* Rute Pengaturan */}
         <Route path="/settings" element={<SettingsPage />} />
         
-        {/* Rute Fitur Barumu */}
-        <Route path="/your-feature" element={<YourPage />} />
+        {/* Rute Fitur Barumu (Diubah path-nya menjadi /notifications agar sinkron) */}
+        <Route path="/notifications" element={<YourPage />} />
       </Routes>
     </Router>
   );
