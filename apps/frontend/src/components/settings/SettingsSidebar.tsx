@@ -1,9 +1,5 @@
 const items = [
   "Akun",
-  "Privasi",
-  "Tampilan",
-  "Surel & Notifikasi",
-  "Bahasa",
 ];
 
 export default function SettingsSidebar() {

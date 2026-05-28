@@ -92,23 +92,6 @@ export default function AccountSettings({
         </div>
       </div>
 
-      <div className="settings-row">
-        <div className="settings-label">
-          Keluar
-        </div>
-
-        <div className="settings-value">
-          <button
-            className="settings-link"
-            onClick={() =>
-              setShowLogoutModal(true)
-            }
-          >
-            Keluar dari semua peramban lain
-          </button>
-        </div>
-      </div>
-
       {showPasswordModal && (
         <ChangePasswordModal
           onClose={() =>

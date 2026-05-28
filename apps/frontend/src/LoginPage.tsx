@@ -91,6 +91,15 @@ export default function LoginPage() {
                 label="Lanjutkan dengan Google"
                 onClick={handleGoogleOAuth}
               />
+
+              <button
+                className="email-register-btn"
+                onClick={() =>
+                  setShowRegister(true)
+                }
+              >
+                Daftar dengan surel
+              </button>
             </div>
 
             <div className="lp-divider" />
@@ -130,11 +139,11 @@ export default function LoginPage() {
             </div>
           </div>
           <div className="lp-footer-wrapper">
-            <footer className="lp-footer">
+            {/* <footer className="lp-footer">
               <a href="#">Tentang Kami</a> · <a href="#">Karier</a> ·{" "}
               <a href="#">Privasi</a> · <a href="#">Ketentuan</a> ·{" "}
               <a href="#">Kontak</a> · <a href="#">Bahasa</a> ·{" "}
-            </footer>
+            </footer> */}
           </div>
         </main>
       </div>
