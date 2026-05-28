@@ -11,7 +11,7 @@ const backupDummyPosts = [
     id: "dummy-1",
     author: "Alpraditia Malik",
     role: "Author di Lawangsinau · Diperbarui 20 Apr",
-    content: "Saya sebelum baca buku: Goblog, ga pede, miskin, gampang emosian. Setelah baca buku jadi lebih terarah. Apa pendapat kalian soal membaca di tahun 2026 ini?",
+    content: "Saya sebelum baca buku, tapi setelah baca buku jadi lebih terarah. Apa pendapat kalian soal membaca di tahun 2026 ini?",
     image_url: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=700&q=80",
     user: { name: "Alpraditia Malik" }
   },

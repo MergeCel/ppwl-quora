@@ -11,7 +11,6 @@ from "react-router-dom";
 
 type ProfileDropdownProps = {
   onClose?: () => void;
-
   user: {
     name: string;
     email: string;
@@ -27,10 +26,14 @@ export default function ProfileDropdown({
 
   return (
     <div className="profile-dropdown">
-
       {/* HEADER */}
-      <div className="profile-dropdown-header">
-
+      <div
+        className="profile-dropdown-header"
+        onClick={() => {
+          navigate("/profile");
+          onClose?.();
+        }}
+      >
         <div className="profile-dropdown-user">
 
           <div className="profile-dropdown-avatar">

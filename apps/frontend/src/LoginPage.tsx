@@ -123,9 +123,6 @@ export default function LoginPage() {
               </div>
               {error && <p className="error-msg">{error}</p>}
               <div className="login-bottom">
-                <button className="forgot-link" type="button">
-                  Lupa kata sandi?
-                </button>
                 <button className="btn-primary" onClick={handleLogin}>
                   Masuk
                 </button>
@@ -133,12 +130,10 @@ export default function LoginPage() {
             </div>
           </div>
           <div className="lp-footer-wrapper">
-            <button className="lang-toggle">English ›</button>
             <footer className="lp-footer">
               <a href="#">Tentang Kami</a> · <a href="#">Karier</a> ·{" "}
               <a href="#">Privasi</a> · <a href="#">Ketentuan</a> ·{" "}
               <a href="#">Kontak</a> · <a href="#">Bahasa</a> ·{" "}
-              <a href="#">Pers</a> · © Qarou, Inc. 2026
             </footer>
           </div>
         </main>
