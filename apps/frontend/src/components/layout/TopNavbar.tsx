@@ -31,26 +31,15 @@ export default function TopNavbar({ user }: TopNavbarProps) {
           Qarou
         </div>
 
-        {/* Nav Center */}
+        {/* Navigasi Inti */}
         <div className="topnav-nav">
           <button className="topnav-icon" title="Beranda" onClick={() => navigate("/home")}>
             <Home size={22} />
           </button>
-          <button className="topnav-icon" title="Jawabanku">
-            <ClipboardList size={22} />
-            <div className="notif-dot" />
-          </button>
-          <button className="topnav-icon" title="Tulis">
-            <PenSquare size={22} />
-          </button>
-          <button className="topnav-icon" title="Komunitas">
-            <Users size={22} />
-          </button>
-          {/* Tombol Lonceng Fix */}
           <button 
             className="topnav-icon" 
             title="Notifikasi" 
-            onClick={() => navigate("/your-feature")}
+            onClick={() => navigate("/notifications")} // Diarahkan ke /notifications sesuai dengan rute endpoint backend
           >
             <Bell size={22} />
             <div className="notif-badge" />
@@ -63,8 +52,12 @@ export default function TopNavbar({ user }: TopNavbarProps) {
           <input type="text" placeholder="Cari Qarou" />
         </div>
 
-        {/* Nav Right */}
-        <div className="topnav-right">
+        {/* Nav Right (Diberikan class 'relative' agar dropdown mengacu pada posisi container ini) */}
+        <div className="topnav-right" style={{ position: "relative" }}>
+          <button className="topnav-icon" title="Tulis">
+            <PenSquare size={22} />
+          </button>
+
           <button className="topnav-avatar" onClick={() => setShowDropdown(!showDropdown)}>
             {safeUser.name.charAt(0).toUpperCase()}
           </button>
@@ -75,7 +68,9 @@ export default function TopNavbar({ user }: TopNavbarProps) {
               : "Tambah pertanyaan"}
           </button>
           {showDropdown && (
-            <ProfileDropdown user={safeUser} onClose={() => setShowDropdown(false)} />
+            <div style={{ position: "absolute", right: 0, top: "100%", zIndex: 50 }}>
+              <ProfileDropdown user={safeUser} onClose={() => setShowDropdown(false)} />
+            </div>
           )}
         </div>
       </div>
