@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "./stores/AuthStore"
+import { useAuthStore } from "./stores/AuthStore";
 import TopNavbar from "./components/layout/TopNavbar";
 import LeftSidebar from "./components/layout/LeftSidebar";
 import CreatePostBox from "./components/post/CreatePostBox";
@@ -12,39 +12,39 @@ const backupDummyPosts = [
     id: "dummy-1",
     author: "Alpraditia Malik",
     role: "Author di Lawangsinau · Diperbarui 20 Apr",
-    content: "Saya sebelum baca buku, tapi setelah baca buku jadi lebih terarah. Apa pendapat kalian soal membaca di tahun 2026 ini?",
-    image_url: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=700&q=80",
+    content:
+      "Saya sebelum baca buku, tapi setelah baca buku jadi lebih terarah. Apa pendapat kalian soal membaca di tahun 2026 ini?",
+    image_url:
+      "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=700&q=80",
     user: { name: "Alpraditia Malik" },
   },
   {
     id: "dummy-2",
     author: "Arjun Maheswara",
     role: "Staff KWU HMSI UNTAN",
-    content: "Guys, jangan lupa besok kumpul buat bahas progress tugas besar PPWL Qarou ya. Semangat tim A2!",
+    content:
+      "Guys, jangan lupa besok kumpul buat bahas progress tugas besar PPWL Qarou ya. Semangat tim A2!",
     image_url: null,
     user: { name: "Arjun Maheswara" },
   },
 ];
 
 export default function HomePage() {
-  const navigate = useNavigate()
-  const { user, token, isAuthenticated } = useAuthStore()
+  const navigate = useNavigate();
+  const { user, token, isAuthenticated } = useAuthStore();
   const [posts, setPosts] = useState<any[]>(backupDummyPosts);
   const [isLoading, setIsLoading] = useState(true);
 
   // Redirect ke login kalau belum auth
   useEffect(() => {
     if (!isAuthenticated || !token) {
-      navigate("/")
+      navigate("/");
     }
-  }, [isAuthenticated, token, navigate])
+  }, [isAuthenticated, token, navigate]);
 
   useEffect(() => {
     const fetchPosts = async () => {
-      if (
-        !import.meta.env.VITE_BACKEND_URL ||
-        import.meta.env.VITE_BACKEND_URL === "http://localhost:3000"
-      ) {
+      if (!import.meta.env.VITE_BACKEND_URL) {
         setIsLoading(false);
         return;
       }
@@ -68,7 +68,9 @@ export default function HomePage() {
 
   return (
     <div className="home-page">
-      <TopNavbar user={{ name: user?.name || "User Qarou", email: user?.email || ""}} />
+      <TopNavbar
+        user={{ name: user?.name || "User Qarou", email: user?.email || "" }}
+      />
 
       <div className="home-layout">
         <LeftSidebar />
