@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { ThumbsUp, MessageSquare, Share2, MoreHorizontal } from "lucide-react";
+import { useAuthStore } from "../../stores/AuthStore";
+import { useNavigate } from "react-router-dom";
 
 interface PostCardProps {
+  postId?: number;
   author: string;
   role: string;
   time: string;
@@ -15,6 +18,7 @@ interface PostCardProps {
 }
 
 export default function PostCard({
+  postId,
   author,
   role,
   time,
@@ -30,21 +34,45 @@ export default function PostCard({
   const [likeCount, setLikeCount] = useState(likes);
   const [visible, setVisible] = useState(true);
   const [expanded, setExpanded] = useState(false);
+  const { token, isAuthenticated } = useAuthStore();
+  const navigate = useNavigate();
 
   if (!visible) return null;
 
   const PREVIEW_LEN = 160;
   const isLong = content.length > PREVIEW_LEN;
-  const displayText = expanded || !isLong ? content : content.slice(0, PREVIEW_LEN);
+  const displayText =
+    expanded || !isLong ? content : content.slice(0, PREVIEW_LEN);
 
-  const handleLike = () => {
+  const handleLike = async () => {
+    if (!isAuthenticated) {
+      alert("Silakan login terlebih dahulu");
+      return;
+    }
     setLiked((l) => !l);
     setLikeCount((c) => (liked ? c - 1 : c + 1));
+    if (!postId) return;
+    try {
+      await fetch(`${import.meta.env.VITE_BACKEND_URL}/posts/${postId}/like`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch {
+      setLiked((l) => !l);
+      setLikeCount((c) => (liked ? c + 1 : c - 1));
+    }
+  };
+
+  const handleComment = () => {
+    if (!isAuthenticated) {
+      alert("Silakan login terlebih dahulu");
+      return;
+    }
+    if (postId) navigate(`/post/${postId}`);
   };
 
   return (
     <div className="post-card">
-      {/* Header */}
       <div className="post-header">
         <div className="post-header-left">
           <div className="post-avatar" style={{ background: avatarColor }}>
@@ -55,13 +83,16 @@ export default function PostCard({
               <span className="post-author">{author}</span>
               <button className="follow-btn">· Ikuti</button>
             </div>
-            <div className="post-role">{role} · {time}</div>
+            <div className="post-role">
+              {role} · {time}
+            </div>
           </div>
         </div>
-        <button className="post-close-btn" onClick={() => setVisible(false)}>✕</button>
+        <button className="post-close-btn" onClick={() => setVisible(false)}>
+          ✕
+        </button>
       </div>
 
-      {/* Content */}
       <div className="post-content">
         {originSpace && (
           <div className="post-origin">
@@ -84,10 +115,14 @@ export default function PostCard({
       </div>
 
       {image && (
-        <img className="post-image" src={image} alt="Post visual" loading="lazy" />
+        <img
+          className="post-image"
+          src={image}
+          alt="Post visual"
+          loading="lazy"
+        />
       )}
 
-      {/* Actions */}
       <div className="post-actions">
         <button
           className={`action-btn ${liked ? "liked" : ""}`}
@@ -96,7 +131,7 @@ export default function PostCard({
           <ThumbsUp size={17} />
           {likeCount > 0 && <span>{likeCount}</span>}
         </button>
-        <button className="action-btn">
+        <button className="action-btn" onClick={handleComment}>
           <MessageSquare size={17} />
           {comments > 0 && <span>{comments}</span>}
         </button>
