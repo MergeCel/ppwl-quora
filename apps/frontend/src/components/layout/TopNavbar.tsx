@@ -15,6 +15,7 @@ type TopNavbarProps = {
   user?: {
     name: string;
     email: string;
+    avatarUrl?: string;
   };
 };
 

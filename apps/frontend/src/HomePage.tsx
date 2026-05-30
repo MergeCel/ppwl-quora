@@ -1,4 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "./stores/AuthStore"
 import TopNavbar from "./components/layout/TopNavbar";
 import LeftSidebar from "./components/layout/LeftSidebar";
 import CreatePostBox from "./components/post/CreatePostBox";
@@ -25,52 +27,17 @@ const backupDummyPosts = [
 ];
 
 export default function HomePage() {
+  const navigate = useNavigate()
+  const { user, token, isAuthenticated } = useAuthStore()
   const [posts, setPosts] = useState<any[]>(backupDummyPosts);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [user, setUser] = useState({
-    name: "User Qarou",
-    email: "",
-    avatarUrl: "",
-  });
-
+  // Redirect ke login kalau belum auth
   useEffect(() => {
-    const handleGoogleToken = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const tokenFromUrl = params.get("token");
-
-      if (tokenFromUrl) {
-        localStorage.setItem("token", tokenFromUrl);
-        window.history.replaceState({}, document.title, "/home");
-      }
-
-      const token = tokenFromUrl || localStorage.getItem("token");
-
-      if (!token) return;
-
-      try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const json = await res.json();
-
-        if (json.loggedIn && json.user) {
-          setUser({
-            name: json.user.name || "User Qarou",
-            email: json.user.email || "",
-            avatarUrl: json.user.avatarUrl || "",
-          });
-        }
-      } catch (err) {
-        console.error("Gagal mengambil user login:", err);
-      }
-    };
-
-    handleGoogleToken();
-  }, []);
+    if (!isAuthenticated || !token) {
+      navigate("/")
+    }
+  }, [isAuthenticated, token, navigate])
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -78,7 +45,6 @@ export default function HomePage() {
         !import.meta.env.VITE_BACKEND_URL ||
         import.meta.env.VITE_BACKEND_URL === "http://localhost:3000"
       ) {
-        console.log("Menggunakan data dummy lokal");
         setIsLoading(false);
         return;
       }
@@ -87,12 +53,11 @@ export default function HomePage() {
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/posts`);
         if (!res.ok) throw new Error("Gagal mengambil data");
         const json = await res.json();
-
         if (json.data && json.data.length > 0) {
           setPosts(json.data);
         }
       } catch (err) {
-        console.error("Gagal nembak API Lambda, balik ke data dummy:", err);
+        console.error("Gagal nembak API, balik ke data dummy:", err);
       } finally {
         setIsLoading(false);
       }
@@ -103,13 +68,13 @@ export default function HomePage() {
 
   return (
     <div className="home-page">
-      <TopNavbar user={user} />
+      <TopNavbar user={{ name: user?.name || "User Qarou", email: user?.email || ""}} />
 
       <div className="home-layout">
         <LeftSidebar />
 
         <main className="feed-section">
-          <CreatePostBox userName={user.name} />
+          <CreatePostBox userName={user?.name || "User Qarou"} />
 
           {isLoading ? (
             <p className="text-center p-4 text-gray-500">Memuat postingan...</p>
