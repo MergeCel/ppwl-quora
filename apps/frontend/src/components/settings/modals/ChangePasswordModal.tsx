@@ -26,7 +26,7 @@ export default function ChangePasswordModal({
         </h2>
 
         <p className="modal-description">
-          Untuk alasan keamanan, silakan masukkan sandi Anda untuk melanjutkan. Jika Anda mendaftar Quora menggunakan Facebook atau Google, silakan 
+          Untuk alasan keamanan, silakan masukkan sandi Anda untuk melanjutkan. Jika Anda mendaftar Qarou menggunakan Google, silakan 
           buat sandi akun.
         </p>
 
@@ -40,13 +40,33 @@ export default function ChangePasswordModal({
         </div>
 
         <div className="modal-footer">
-          <button className="modal-cancel">
-            Batal
-          </button>
 
-          <button className="modal-submit">
-            Selesai
-          </button>
+        <button
+          className="modal-cancel"
+          onClick={onClose}
+        >
+          Batal
+        </button>
+
+        <button
+          className="save-btn"
+          onClick={() => {
+
+            localStorage.setItem(
+              "password",
+              "dummy-password"
+            );
+
+            alert(
+              "Sandi berhasil diperbarui"
+            );
+
+            onClose();
+
+          }}
+        >
+          Simpan
+        </button>
         </div>
       </div>
     </div>

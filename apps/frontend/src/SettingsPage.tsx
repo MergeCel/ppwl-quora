@@ -17,21 +17,14 @@ export default function SettingsPage() {
     <div className="settings-root">
       <TopNavbar user={user} />
       <div className="settings-container">
-
         <SettingsSidebar />
-
         <div className="settings-content">
-
           <h1 className="settings-title">
             Setelan Akun
           </h1>
-
           <AccountSettings user={user} />
-
           <ConnectedAccounts user={user} />
-
         </div>
-
       </div>
     </div>
   );

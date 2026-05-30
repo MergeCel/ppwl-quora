@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./style/login.css";
-
+import { useGoogleLogin } from "@react-oauth/google"
+import { useAuthStore } from "./stores/AuthStore"
 import GoogleButton from "./components/auth/GoogleButton.tsx";
-import FacebookButton from "./components/auth/FacebookButton.tsx";
 import RegisterModal from "./components/auth/RegisterModal.tsx";
 import OtpModal from "./components/auth/OtpModal.tsx";
 
@@ -14,6 +14,7 @@ interface LoginForm {
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const setAuth = useAuthStore((state) => state.setAuth)
 
   const [loginForm, setLoginForm] = useState<LoginForm>({
     email: "",
@@ -36,33 +37,46 @@ export default function LoginPage() {
         `${import.meta.env.VITE_BACKEND_URL}/auth/login`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(loginForm),
         }
       );
 
       const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Login gagal");
 
-      if (!res.ok) {
-        throw new Error(data.message || "Login gagal");
-      }
-
-  
-      localStorage.setItem("token", data.accessToken);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-
-      navigate("/");
+      setAuth(data.user, data.accessToken)
+      navigate("/home");
     } catch (err: any) {
       setError(err.message);
     }
   };
 
-  const handleGoogleOAuth = () => {
-    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google`;
-  };
+  const handleGoogleOAuth = useGoogleLogin({
+    flow: "implicit",
+    onSuccess: async (tokenResponse) => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/google`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ access_token: tokenResponse.access_token }),
+        })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.message || "Login Google gagal")
+
+        setAuth(data.user, data.accessToken)
+
+        // Tutup popup yang masih terbuka
+        window.opener = null
+        window.open("", "_self")
+
+        navigate("/home")
+      } catch (err: any) {
+        setError(err.message)
+      }
+    },
+    onError: () => setError("Login Google gagal"),
+  })
 
   const handleRegisterSuccess = (email: string) => {
     setPendingEmail(email);
@@ -74,7 +88,7 @@ export default function LoginPage() {
     <>
       <div className="lp-root">
         <main className="lp-card">
-          <div className="lp-logo">Quora</div>
+          <div className="lp-logo">Qarou</div>
           <div className="lp-lang">Bahasa Indonesia</div>
           <div className="lp-tagline">
             Tempat berbagi pengetahuan dan memahami dunia lebih baik
@@ -83,19 +97,20 @@ export default function LoginPage() {
           <div className="lp-inner">
             <div className="lp-left">
               <p className="lp-tos">
-                Dengan melanjutkan, Anda menunjukkan bahwa Anda
-                menyetujui{" "}
+                Dengan melanjutkan, Anda menunjukkan bahwa Anda menyetujui{" "}
                 <a href="#">Persyaratan Layanan</a> dan{" "}
-                <a href="#">Kebijakan Privasi</a> Quora.
+                <a href="#">Kebijakan Privasi</a> Qarou.
               </p>
               <GoogleButton
                 label="Lanjutkan dengan Google"
                 onClick={handleGoogleOAuth}
               />
-              <FacebookButton label="Lanjutkan dengan Facebook" />
-              <a className="register-link" onClick={() => setShowRegister(true)}>
+              <button
+                className="email-register-btn"
+                onClick={() => setShowRegister(true)}
+              >
                 Daftar dengan surel
-              </a>
+              </button>
             </div>
 
             <div className="lp-divider" />
@@ -128,23 +143,11 @@ export default function LoginPage() {
               </div>
               {error && <p className="error-msg">{error}</p>}
               <div className="login-bottom">
-                <button className="forgot-link" type="button">
-                  Lupa kata sandi?
-                </button>
                 <button className="btn-primary" onClick={handleLogin}>
                   Masuk
                 </button>
               </div>
             </div>
-          </div>
-          <div className="lp-footer-wrapper">
-            <button className="lang-toggle">English ›</button>
-            <footer className="lp-footer">
-              <a href="#">Tentang Kami</a> · <a href="#">Karier</a> ·{" "}
-              <a href="#">Privasi</a> · <a href="#">Ketentuan</a> ·{" "}
-              <a href="#">Kontak</a> · <a href="#">Bahasa</a> ·{" "}
-              <a href="#">Pers</a> · © Quora, Inc. 2026
-            </footer>
           </div>
         </main>
       </div>
@@ -162,7 +165,7 @@ export default function LoginPage() {
           onClose={() => setShowOtp(false)}
           onVerified={() => {
             setShowOtp(false);
-            navigate("/");
+            navigate("/home");
           }}
         />
       )}

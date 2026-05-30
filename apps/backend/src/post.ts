@@ -99,27 +99,15 @@ export const postRoutes = (getPrisma: () => DbClient) =>
         return { error: `Maksimal ${MAX_POSTS} postingan per user` };
       }
 
-      const { content, image_url } = body;
+      const { content } = body;
       if (!content?.trim()) {
         set.status = 400;
         return { error: "Konten tidak boleh kosong" };
       }
 
-      if (image_url) {
-        const ext = image_url.split("?")[0].split(".").pop()?.toLowerCase();
-        const allowedExt = ["jpg", "jpeg", "png", "gif", "webp"];
-        if (!allowedExt.includes(ext)) {
-          set.status = 400;
-          return {
-            error: "Hanya gambar yang diperbolehkan (jpg, png, gif, webp)",
-          };
-        }
-      }
-
       const post = await (getPrisma() as any).post.create({
         data: {
           content: content.trim(),
-          image_url: image_url ?? null,
           user_id: userId,
         },
         include: {
@@ -153,24 +141,12 @@ export const postRoutes = (getPrisma: () => DbClient) =>
         return { error: "Bukan postinganmu" };
       }
 
-      const { content, image_url } = body;
-
-      if (image_url) {
-        const ext = image_url.split("?")[0].split(".").pop()?.toLowerCase();
-        const allowedExt = ["jpg", "jpeg", "png", "gif", "webp"];
-        if (!allowedExt.includes(ext)) {
-          set.status = 400;
-          return {
-            error: "Hanya gambar yang diperbolehkan (jpg, png, gif, webp)",
-          };
-        }
-      }
+      const { content } = body;
 
       const updated = await (getPrisma() as any).post.update({
         where: { id: Number(params.id) },
         data: {
           ...(content ? { content: content.trim() } : {}),
-          ...(image_url !== undefined ? { image_url } : {}),
         },
         include: {
           user: {

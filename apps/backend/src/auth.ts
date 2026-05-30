@@ -240,4 +240,8 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
       set.status = 500
       return { message: err instanceof Error ? err.message : String(err) }
     }
+  }, {
+    body: t.Object({
+      access_token: t.String()
+    })
   })

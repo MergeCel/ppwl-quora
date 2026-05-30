@@ -1,38 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  ArrowLeft,
-  Heart,
-  MessageCircle,
-  Share2,
-  Loader2,
-  Send,
-} from "lucide-react";
-import { useAuthStore } from "../../stores/AuthStore";
-interface Comment {
-  id: number;
-  content: string;
-  created_at: string;
-  user: { name: string; avatar_url?: string };
-  replies?: Comment[];
-}
-
-interface Post {
-  id: number;
-  content: string;
-  image_url?: string;
-  created_at: string;
-  user: { name: string; avatar_url?: string };
-  _count?: { likes: number; comments: number };
-}
+import { ArrowLeft, Heart, MessageCircle, Share2, Send } from "lucide-react";
+import { useAuthStore } from "../stores/AuthStore";
 
 export default function PostDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { token, isAuthenticated } = useAuthStore();
+  const { isAuthenticated, token } = useAuthStore();
 
-  const [post, setPost] = useState<Post | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [post, setPost] = useState<any>(null);
+  const [comments, setComments] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
@@ -49,19 +26,12 @@ export default function PostDetailPage() {
         return;
       }
       try {
-        const [postRes, commentRes] = await Promise.all([
-          fetch(`${backendUrl}/posts/${id}`),
-          fetch(`${backendUrl}/posts/${id}/comments`),
-        ]);
+        const postRes = await fetch(`${backendUrl}/posts/${id}`);
         if (postRes.ok) {
           const postJson = await postRes.json();
-          const p = postJson.data;
-          setPost(p);
-          setLikeCount(p._count?.likes || 0);
-        }
-        if (commentRes.ok) {
-          const commentJson = await commentRes.json();
-          setComments(commentJson.data || []);
+          setPost(postJson.data);
+          setLikeCount(postJson.data._count?.likes || 0);
+          setComments(postJson.data.comments || []);
         }
       } catch (err) {
         console.error("Gagal fetch:", err);
@@ -98,17 +68,17 @@ export default function PostDetailPage() {
     if (!commentInput.trim() || isSubmitting) return;
     setIsSubmitting(true);
     try {
-      const res = await fetch(`${backendUrl}/posts/${id}/comments`, {
+      const res = await fetch(`${backendUrl}/comments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ content: commentInput }),
+        body: JSON.stringify({ content: commentInput, post_id: Number(id) }),
       });
       if (res.ok) {
         const json = await res.json();
-        setComments((prev) => [json.data, ...prev]);
+        setComments((prev) => [...prev, json.data]);
         setCommentInput("");
       }
     } catch (err) {
@@ -130,11 +100,11 @@ export default function PostDetailPage() {
         style={{
           display: "flex",
           justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
+          padding: "60px",
+          color: "#aaa",
         }}
       >
-        <Loader2 size={32} style={{ animation: "spin 1s linear infinite" }} />
+        Memuat...
       </div>
     );
 
@@ -166,7 +136,6 @@ export default function PostDetailPage() {
         color: "#e5e5e5",
       }}
     >
-      {/* Back button */}
       <button
         onClick={() => navigate(-1)}
         style={{
@@ -240,7 +209,6 @@ export default function PostDetailPage() {
           />
         )}
 
-        {/* Actions */}
         <div
           style={{
             display: "flex",
@@ -359,7 +327,7 @@ export default function PostDetailPage() {
         </div>
       </div>
 
-      {/* Comments list */}
+      {/* Comments */}
       <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         {comments.length === 0 ? (
           <p style={{ textAlign: "center", color: "#666", fontSize: "14px" }}>
