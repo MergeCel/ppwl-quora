@@ -1,26 +1,31 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import HomePage from "./HomePage"; 
+import { useAuthStore } from "./stores/AuthStore";
+import HomePage from "./HomePage";
 import SettingsPage from "./SettingsPage";
+import ProfilePage from "./ProfilePage";
 import YourPage from "./pages/YourPage";
+import LoginPage from "./LoginPage";
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, _hasHydrated } = useAuthStore()
+
+  console.log("_hasHydrated:", _hasHydrated, "isAuthenticated:", isAuthenticated)
+
+  if (!_hasHydrated) return null
+  if (!isAuthenticated) return <Navigate to="/" replace />
+  return <>{children}</>
+}
 
 function App() {
-  // Dummy user untuk dipassing ke komponen yang membutuhkan data user (misal Navbar/Beranda)
-  const dummyUser = { name: "Arjun Maheswara", email: "arjun@hmsi.untan.ac.id" };
-
   return (
     <Router>
       <Routes>
-        {/* Rute awal otomatis dialihkan ke /home */}
-        <Route path="/" element={<Navigate to="/home" replace />} />
-        
-        {/* Rute Beranda */}
-        <Route path="/home" element={<HomePage user={dummyUser} />} />
-        
-        {/* Rute Pengaturan */}
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
         <Route path="/settings" element={<SettingsPage />} />
-        
-        {/* Rute Fitur Barumu (Diubah path-nya menjadi /notifications agar sinkron) */}
-        <Route path="/notifications" element={<YourPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/notifications" element={<ProtectedRoute><YourPage /></ProtectedRoute>} />
+        <Route path="*" element={<LoginPage />} />
       </Routes>
     </Router>
   );

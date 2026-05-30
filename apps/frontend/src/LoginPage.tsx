@@ -45,7 +45,7 @@ export default function LoginPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Login gagal");
 
-      setAuth(data.user, data.accessToken) //simpan ke Zustand
+      setAuth(data.user, data.accessToken)
       navigate("/home");
     } catch (err: any) {
       setError(err.message);
@@ -64,7 +64,12 @@ export default function LoginPage() {
         const data = await res.json()
         if (!res.ok) throw new Error(data.message || "Login Google gagal")
 
-        setAuth(data.user, data.accessToken) //simpan ke Zustand
+        setAuth(data.user, data.accessToken)
+
+        // Tutup popup yang masih terbuka
+        window.opener = null
+        window.open("", "_self")
+
         navigate("/home")
       } catch (err: any) {
         setError(err.message)

@@ -15,7 +15,7 @@ export const notificationRoutes = (getPrisma: () => DbClient) =>
         set.status = 401;
         return { userId: null };
       }
-      return { userId: payload.id as number };
+      return { userId: payload.id as string }
     })
 
     // GET /notifications — ambil semua notifikasi milik user yang login
