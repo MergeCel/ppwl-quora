@@ -3,10 +3,9 @@ import { Elysia } from "elysia";
 import { cookie } from "@elysiajs/cookie";
 import { jwt } from "@elysiajs/jwt";
 import { cors } from "@elysiajs/cors";
-import { createOAuthClient, getAuthUrl } from "./auth";
+import { authRoutes } from "./auth"; // 👈 import authRoutes, bukan createOAuthClient
 import type { ApiResponse, HealthCheck } from "shared";
 import type { DbClient } from "./types";
-import bcrypt from "bcryptjs";
 
 const makeAuthMiddleware =
   (jwtInstance: any) =>
@@ -42,6 +41,7 @@ export const createApp = (getPrisma: () => DbClient) => {
     )
 
     .use(postRoutes(getPrisma))
+    .use(authRoutes) // 👈 pakai authRoutes dari auth.ts
 
     .get("/", (): ApiResponse<HealthCheck> => ({
       data: { status: "ok" },
@@ -92,20 +92,13 @@ export const createApp = (getPrisma: () => DbClient) => {
       return { data: users, message: "User list retrieved" };
     })
 
-    // ==========================================
-    // 🔔 FITUR BARU: GET /notifications
-    // ==========================================
     .get("/notifications", async () => {
       try {
-        // Ambil data notifikasi langsung dari AWS RDS Postgres
         const notifications = await getPrisma().notification.findMany({
-          orderBy: {
-            created_at: "desc"
-          },
+          orderBy: { created_at: "desc" },
           take: 10
         });
-        
-        // Jika DB kosong, kita return data dummy terstruktur agar UI tidak blank saat dinilai
+
         if (notifications.length === 0) {
           return {
             data: [
@@ -128,59 +121,6 @@ export const createApp = (getPrisma: () => DbClient) => {
       }
     })
 
-    .post("/auth/register", async ({ body, set }: any) => {
-      const { name, email, password, username } = body;
-
-      const existing = await getPrisma().user.findUnique({ where: { email } });
-      if (existing) {
-        set.status = 400;
-        return { message: "Email sudah terdaftar" };
-      }
-
-      const hashed = await bcrypt.hash(password, 10);
-
-      const user = await getPrisma().user.create({
-        data: {
-          name,
-          username: username || email.split("@")[0],
-          email,
-          password: hashed,
-          provider: "email"
-        }
-      });
-
-      set.status = 201;
-      return { message: "Register berhasil", user };
-    })
-
-    .post("/auth/login", async ({ body, set, jwt }: any) => {
-      const { email, password } = body;
-
-      const user = await getPrisma().user.findUnique({ where: { email } });
-      if (!user) {
-        set.status = 404;
-        return { message: "User tidak ditemukan" };
-      }
-
-      const valid = await bcrypt.compare(password, user.password!);
-      if (!valid) {
-        set.status = 401;
-        return { message: "Password salah" };
-      }
-
-      const token = await jwt.sign({ id: user.id.toString() });
-
-      return {
-        user: {
-          id: user.id.toString(),
-          name: user.name,
-          email: user.email,
-          avatarUrl: user.avatar_url
-        },
-        accessToken: token
-      };
-    })
-
     .get("/seed", async ({ query, set }: any) => {
       if (query.key !== process.env.SECRET_KEY) {
         set.status = 403;
@@ -196,65 +136,6 @@ export const createApp = (getPrisma: () => DbClient) => {
 
       return { message: "Dummy data berhasil dibuat" };
     })
-
-    .get("/auth/google", ({ redirect }) => {
-      const oauth2Client = createOAuthClient();
-      const url = getAuthUrl(oauth2Client);
-      return redirect(url);
-    })
-
-    .get("/auth/callback", async ({ query, jwt, redirect }) => {
-  const { code } = query as any
-
-  const oauth2Client = createOAuthClient()
-
-  const { tokens } = await oauth2Client.getToken(code)
-
-  oauth2Client.setCredentials(tokens)
-
-  const response = await fetch(
-    "https://www.googleapis.com/oauth2/v2/userinfo",
-    {
-      headers: {
-        Authorization: `Bearer ${tokens.access_token}`,
-      },
-    }
-  )
-
-  const googleUser: any = await response.json()
-
-  let user = await getPrisma().user.findUnique({
-    where: {
-      email: googleUser.email,
-    },
-  })
-
-  if (!user) {
-    user = await getPrisma().user.create({
-      data: {
-        name: googleUser.name,
-        username:
-          googleUser.email.split("@")[0] +
-          Math.floor(Math.random() * 1000),
-        email: googleUser.email,
-        avatar_url: googleUser.picture,
-        provider: "google",
-        provider_id: googleUser.id,
-      },
-    })
-  }
-
-  const token = await jwt.sign({
-    id: user.id.toString(),
-    name: user.name,
-    email: user.email,
-    avatarUrl: user.avatar_url,
-  })
-
-  return redirect(
-    `${process.env.FRONTEND_URL}/home?token=${token}`
-  )
-})
 
     .get("/auth/me", async ({ headers, jwt, set }) => {
       const auth = makeAuthMiddleware(jwt);

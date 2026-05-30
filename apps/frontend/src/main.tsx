@@ -1,32 +1,33 @@
 import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { GoogleOAuthProvider } from '@react-oauth/google'  // 👈 tambah ini
 import './style/index.css'
 import './style/home.css'
 import './style/login.css'
 import './style/settings.css'
-import SettingsPage from "./SettingsPage.tsx";
-import HomePage from "./HomePage.tsx";
-import ProfilePage from "./ProfilePage.tsx";
-import YourPage from "./pages/YourPage.tsx"; // 👈 Impor halaman fitur barumu
+import SettingsPage from "./SettingsPage.tsx"
+import HomePage from "./HomePage.tsx"
+import ProfilePage from "./ProfilePage.tsx"
+import YourPage from "./pages/YourPage.tsx"
 
 const DefaultApp = lazy(() => import('./LoginPage'))
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Routes>
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          {/* 🔔 ROUTE HALAMAN NOTIFIKASI */}
-          <Route path="/your-feature" element={<YourPage />} />
-          
-          <Route path="/" element={<DefaultApp />} />
-          <Route path="*" element={<DefaultApp />} />
-        </Routes>
-      </Suspense>
-    </BrowserRouter>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <BrowserRouter>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Routes>
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/your-feature" element={<YourPage />} />
+            <Route path="/" element={<DefaultApp />} />
+            <Route path="*" element={<DefaultApp />} />
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
+    </GoogleOAuthProvider>
   </StrictMode>
 )
