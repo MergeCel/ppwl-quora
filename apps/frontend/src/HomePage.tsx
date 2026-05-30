@@ -5,7 +5,6 @@ import CreatePostBox from "./components/post/CreatePostBox";
 import PostCard from "./components/post/PostCard";
 import "./style/home.css";
 
-// Data dummy lokal biar beranda gak kosong kalau API belum siap
 const backupDummyPosts = [
   {
     id: "dummy-1",
@@ -13,7 +12,7 @@ const backupDummyPosts = [
     role: "Author di Lawangsinau · Diperbarui 20 Apr",
     content: "Saya sebelum baca buku, tapi setelah baca buku jadi lebih terarah. Apa pendapat kalian soal membaca di tahun 2026 ini?",
     image_url: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=700&q=80",
-    user: { name: "Alpraditia Malik" }
+    user: { name: "Alpraditia Malik" },
   },
   {
     id: "dummy-2",
@@ -21,19 +20,65 @@ const backupDummyPosts = [
     role: "Staff KWU HMSI UNTAN",
     content: "Guys, jangan lupa besok kumpul buat bahas progress tugas besar PPWL Qarou ya. Semangat tim A2!",
     image_url: null,
-    user: { name: "Arjun Maheswara" }
-  }
+    user: { name: "Arjun Maheswara" },
+  },
 ];
 
 export default function HomePage() {
-  const [posts, setPosts] = useState<any[]>(backupDummyPosts); // Default pasang dummy dulu biar gak kosong
+  const [posts, setPosts] = useState<any[]>(backupDummyPosts);
   const [isLoading, setIsLoading] = useState(true);
+
+  const [user, setUser] = useState({
+    name: "User Qarou",
+    email: "",
+    avatarUrl: "",
+  });
+
+  useEffect(() => {
+    const handleGoogleToken = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const tokenFromUrl = params.get("token");
+
+      if (tokenFromUrl) {
+        localStorage.setItem("token", tokenFromUrl);
+        window.history.replaceState({}, document.title, "/home");
+      }
+
+      const token = tokenFromUrl || localStorage.getItem("token");
+
+      if (!token) return;
+
+      try {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const json = await res.json();
+
+        if (json.loggedIn && json.user) {
+          setUser({
+            name: json.user.name || "User Qarou",
+            email: json.user.email || "",
+            avatarUrl: json.user.avatarUrl || "",
+          });
+        }
+      } catch (err) {
+        console.error("Gagal mengambil user login:", err);
+      }
+    };
+
+    handleGoogleToken();
+  }, []);
 
   useEffect(() => {
     const fetchPosts = async () => {
-      // Cek kalau URL backend belum disetting di .env, gak usah maksa fetch
-      if (!import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_BACKEND_URL === "http://localhost:3000") {
-        console.log("Menggunakan data dummy lokal (URL Backend belum dikonfigurasi ke AWS)");
+      if (
+        !import.meta.env.VITE_BACKEND_URL ||
+        import.meta.env.VITE_BACKEND_URL === "http://localhost:3000"
+      ) {
+        console.log("Menggunakan data dummy lokal");
         setIsLoading(false);
         return;
       }
@@ -42,8 +87,7 @@ export default function HomePage() {
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/posts`);
         if (!res.ok) throw new Error("Gagal mengambil data");
         const json = await res.json();
-        
-        // Kalau backend sukses balikin data dan ada isinya, pakai data dari backend
+
         if (json.data && json.data.length > 0) {
           setPosts(json.data);
         }
@@ -59,18 +103,14 @@ export default function HomePage() {
 
   return (
     <div className="home-page">
-      {/* Navbar atas */}
-      <TopNavbar user={{ name: "Arjun Maheswara", email: "arjun@hmsi.untan.ac.id" }} />
+      <TopNavbar user={user} />
 
       <div className="home-layout">
-        {/* Sidebar kiri */}
         <LeftSidebar />
 
-        {/* Feed Tengah */}
         <main className="feed-section">
-          {/* CreatePostBox dipaksa muncul dulu biar gak sepi */}
-          <CreatePostBox userName="Arjun Maheswara" />
-          
+          <CreatePostBox userName={user.name} />
+
           {isLoading ? (
             <p className="text-center p-4 text-gray-500">Memuat postingan...</p>
           ) : (
