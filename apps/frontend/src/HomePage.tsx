@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "./stores/AuthStore"
+import { useAuthStore } from "./stores/AuthStore";
 import TopNavbar from "./components/layout/TopNavbar";
 import LeftSidebar from "./components/layout/LeftSidebar";
 import CreatePostBox from "./components/post/CreatePostBox";
@@ -12,43 +11,36 @@ const backupDummyPosts = [
     id: "dummy-1",
     author: "Alpraditia Malik",
     role: "Author di Lawangsinau · Diperbarui 20 Apr",
-    content: "Saya sebelum baca buku, tapi setelah baca buku jadi lebih terarah. Apa pendapat kalian soal membaca di tahun 2026 ini?",
-    image_url: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=700&q=80",
+    content:
+      "Saya sebelum baca buku, tapi setelah baca buku jadi lebih terarah. Apa pendapat kalian soal membaca di tahun 2026 ini?",
+    image_url:
+      "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=700&q=80",
     user: { name: "Alpraditia Malik" },
+    _count: { likes: 0, comments: 0 },
   },
   {
     id: "dummy-2",
     author: "Arjun Maheswara",
     role: "Staff KWU HMSI UNTAN",
-    content: "Guys, jangan lupa besok kumpul buat bahas progress tugas besar PPWL Qarou ya. Semangat tim A2!",
+    content:
+      "Guys, jangan lupa besok kumpul buat bahas progress tugas besar PPWL Qarou ya. Semangat tim A2!",
     image_url: null,
     user: { name: "Arjun Maheswara" },
+    _count: { likes: 0, comments: 0 },
   },
 ];
 
 export default function HomePage() {
-  const navigate = useNavigate()
-  const { user, token, isAuthenticated } = useAuthStore()
+  const { user } = useAuthStore();
   const [posts, setPosts] = useState<any[]>(backupDummyPosts);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Redirect ke login kalau belum auth
-  useEffect(() => {
-    if (!isAuthenticated || !token) {
-      navigate("/")
-    }
-  }, [isAuthenticated, token, navigate])
-
   useEffect(() => {
     const fetchPosts = async () => {
-      if (
-        !import.meta.env.VITE_BACKEND_URL ||
-        import.meta.env.VITE_BACKEND_URL === "http://localhost:3000"
-      ) {
+      if (!import.meta.env.VITE_BACKEND_URL) {
         setIsLoading(false);
         return;
       }
-
       try {
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/posts`);
         if (!res.ok) throw new Error("Gagal mengambil data");
@@ -62,26 +54,25 @@ export default function HomePage() {
         setIsLoading(false);
       }
     };
-
     fetchPosts();
   }, []);
 
   return (
     <div className="home-page">
-      <TopNavbar user={{ name: user?.name || "User Qarou", email: user?.email || ""}} />
-
+      <TopNavbar
+        user={{ name: user?.name || "User Qarou", email: user?.email || "" }}
+      />
       <div className="home-layout">
         <LeftSidebar />
-
         <main className="feed-section">
           <CreatePostBox userName={user?.name || "User Qarou"} />
-
           {isLoading ? (
             <p className="text-center p-4 text-gray-500">Memuat postingan...</p>
           ) : (
             posts.map((post) => (
               <PostCard
                 key={post.id}
+                postId={typeof post.id === "number" ? post.id : undefined}
                 author={post.user?.name || post.author || "Anonim"}
                 role={post.role || "User Qarou"}
                 time={post.created_at || "Baru saja"}
@@ -89,8 +80,8 @@ export default function HomePage() {
                 content={post.content}
                 image={post.image_url}
                 avatarColor="#7c3aed"
-                likes={post.likes || 12}
-                comments={post.comments || 3}
+                likes={post._count?.likes ?? 0}
+                comments={post._count?.comments ?? 0}
               />
             ))
           )}

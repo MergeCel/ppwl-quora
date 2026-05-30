@@ -1,5 +1,5 @@
-import { resolve } from "path"
-import { existsSync, readFileSync } from "fs"
+import { resolve } from "path";
+import { existsSync, readFileSync } from "fs";
 import { defineConfig } from "prisma/config";
 
 const envPath = resolve(process.cwd(), ".env");
@@ -13,7 +13,10 @@ if (!process.env.DATABASE_URL && existsSync(envPath)) {
       if (idx === -1) continue;
       let key = trimmed.slice(0, idx).trim();
       let val = trimmed.slice(idx + 1).trim();
-      if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+      if (
+        (val.startsWith('"') && val.endsWith('"')) ||
+        (val.startsWith("'") && val.endsWith("'"))
+      ) {
         val = val.slice(1, -1);
       }
       if (!process.env[key]) process.env[key] = val;
@@ -25,7 +28,10 @@ if (!process.env.DATABASE_URL && existsSync(envPath)) {
 
 if (process.env.DATABASE_URL) {
   let raw = process.env.DATABASE_URL.trim();
-  if ((raw.startsWith('"') && raw.endsWith('"')) || (raw.startsWith("'") && raw.endsWith("'"))) {
+  if (
+    (raw.startsWith('"') && raw.endsWith('"')) ||
+    (raw.startsWith("'") && raw.endsWith("'"))
+  ) {
     raw = raw.slice(1, -1);
     process.env.DATABASE_URL = raw;
   }
@@ -35,7 +41,13 @@ try {
   const dbg = process.env.DATABASE_URL || "";
   console.log("[prisma.config] DATABASE_URL preview:", dbg.slice(0, 200));
   console.log("[prisma.config] DATABASE_URL length:", dbg.length);
-  console.log("[prisma.config] DATABASE_URL char codes (first 40):", dbg.split("").slice(0,40).map(c => c.charCodeAt(0)));
+  console.log(
+    "[prisma.config] DATABASE_URL char codes (first 40):",
+    dbg
+      .split("")
+      .slice(0, 40)
+      .map((c) => c.charCodeAt(0)),
+  );
 } catch (e) {}
 
 export default defineConfig({
