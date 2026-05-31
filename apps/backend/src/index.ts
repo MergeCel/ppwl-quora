@@ -1,8 +1,10 @@
 import { postRoutes } from "./post";
 import { Elysia } from "elysia";
 import { cookie } from "@elysiajs/cookie";
+import { notificationRoutes } from "./notification";
 import { jwt } from "@elysiajs/jwt";
-import { authRoutes } from "./auth"; // 👈 import authRoutes, bukan createOAuthClient
+import { cors } from "@elysiajs/cors";
+import { authRoutes } from "./auth"; 
 import type { ApiResponse, HealthCheck } from "shared";
 import type { DbClient } from "./types";
 
@@ -25,6 +27,11 @@ const makeAuthMiddleware =
 
 export const createApp = (getPrisma: () => DbClient) => {
   const app = new Elysia()
+    .use(cors({
+      origin: ["http://localhost:5173", "https://ppwl-a2.store"],
+      allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"],
+      credentials: true,
+    }))
     .use(cookie())
     .use(
       jwt({
@@ -35,7 +42,8 @@ export const createApp = (getPrisma: () => DbClient) => {
     )
 
     .use(postRoutes(getPrisma))
-    .use(authRoutes) // 👈 pakai authRoutes dari auth.ts
+    .use(authRoutes) // pakai authRoutes dari auth.ts
+    .use(notificationRoutes(getPrisma)) // pakai notificationRoutes dari notification.ts
 
     .get("/", (): ApiResponse<HealthCheck> => ({
       data: { status: "ok" },
@@ -135,15 +143,7 @@ export const createApp = (getPrisma: () => DbClient) => {
       const auth = makeAuthMiddleware(jwt);
       const user = await auth({ headers, set });
       if (!user) return { loggedIn: false };
-      return {
-  loggedIn: true,
-  user: {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    avatarUrl: user.avatarUrl,
-  },
-};
+      return { loggedIn: true, user };
     });
 
   return app;

@@ -10,7 +10,7 @@ export default function CreatePostBox({
   const [isOpen, setIsOpen] = useState(false);
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
-  const { token, isAuthenticated } = useAuthStore();
+  const { token, isAuthenticated, user } = useAuthStore();  // 👈 tambah user
 
   const handleOpen = () => {
     if (!isAuthenticated) {
@@ -46,8 +46,16 @@ export default function CreatePostBox({
   return (
     <div className="create-post-box">
       <div className="create-post-top">
-        <div className="create-post-avatar">
-          {userName.charAt(0).toUpperCase()}
+        <div className="create-post-avatar" style={{ overflow: "hidden", padding: 0 }}>
+          {user?.avatarUrl ? (
+            <img
+              src={user.avatarUrl}
+              alt={userName}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : (
+            userName.charAt(0).toUpperCase()
+          )}
         </div>
         <button className="create-post-input" onClick={handleOpen}>
           Apa yang ingin Anda tanyakan atau bagikan?

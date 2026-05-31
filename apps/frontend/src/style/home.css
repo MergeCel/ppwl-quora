@@ -126,6 +126,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  padding: 0;
 }
 
 .topnav-globe {
@@ -547,6 +549,8 @@ body {
   font-size: 20px;
 
   flex-shrink: 0;
+
+  overflow: hidden;
 }
 
 .profile-dropdown-user h3 {

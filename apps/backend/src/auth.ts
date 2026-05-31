@@ -142,7 +142,7 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
             name: googleUser.name || "",
             username: googleUser.email.split("@")[0] + Math.floor(Math.random() * 1000),
             email: googleUser.email,
-            avatar_url: googleUser.picture || null,
+            avatar_url: googleUser.picture ? googleUser.picture.replace(/=s\d+-c$/, '=s200-c') : null,
             provider: "google",
             provider_id: googleUser.sub || null
           }
@@ -150,7 +150,8 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
       } else if (!user.provider_id) {
         await getPrisma().user.update({
           where: { id: user.id },
-          data: { provider: "google", provider_id: googleUser.sub }
+          data: { provider: "google", provider_id: googleUser.sub, avatar_url: googleUser.picture ? googleUser.picture.replace(/=s\d+-c$/, '=s200-c') : null },
+          
         })
       }
 

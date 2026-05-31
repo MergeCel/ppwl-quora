@@ -59,8 +59,16 @@ export default function TopNavbar({ user }: TopNavbarProps) {
             <PenSquare size={22} />
           </button>
 
-          <button className="topnav-avatar" onClick={() => setShowDropdown(!showDropdown)}>
-            {safeUser.name.charAt(0).toUpperCase()}
+          <button className="topnav-avatar" style={{ overflow: "hidden" }} onClick={() => setShowDropdown(!showDropdown)}>
+            {safeUser.avatarUrl ? (
+              <img
+                src={safeUser.avatarUrl}
+                alt={safeUser.name}
+                style={{ width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover" }}
+              />
+            ) : (
+              safeUser.name.charAt(0).toUpperCase()
+            )}
           </button>
           <button className="topnav-globe"><Globe size={18} /></button>
           <button className="topnav-question-btn">

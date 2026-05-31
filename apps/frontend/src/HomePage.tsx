@@ -60,7 +60,7 @@ export default function HomePage() {
   return (
     <div className="home-page">
       <TopNavbar
-        user={{ name: user?.name || "User Qarou", email: user?.email || "" }}
+        user={{ name: user?.name || "User Qarou", email: user?.email || "", avatarUrl: user?.avatarUrl || "" }}
       />
       <div className="home-layout">
         <LeftSidebar />
