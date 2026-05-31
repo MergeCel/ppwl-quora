@@ -126,6 +126,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  padding: 0;
 }
 
 .topnav-globe {
@@ -487,25 +489,14 @@ body {
   color: #2e69ff;
 }
 .profile-dropdown {
-  position: absolute;
-
-  top: 54px;
-
-  right: 90px;
-
+  /* Hapus top: 54px; dan right: 90px; */
   width: 320px;
-
   background: #1f1f1f;
-
   border: 1px solid rgba(255, 255, 255, 0.08);
-
   border-radius: 14px;
-
   overflow: hidden;
-
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-
-  z-index: 99999;
+  /* Kita tidak perlu z-index: 99999 di sini jika sudah ada di React */
 }
 
 .profile-dropdown-header {
@@ -547,6 +538,8 @@ body {
   font-size: 20px;
 
   flex-shrink: 0;
+
+  overflow: hidden;
 }
 
 .profile-dropdown-user h3 {

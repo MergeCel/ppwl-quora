@@ -1,9 +1,10 @@
 import { postRoutes } from "./post";
 import { Elysia } from "elysia";
 import { cookie } from "@elysiajs/cookie";
+import { notificationRoutes } from "./notification";
 import { jwt } from "@elysiajs/jwt";
 import { cors } from "@elysiajs/cors";
-import { authRoutes } from "./auth"; // 👈 import authRoutes, bukan createOAuthClient
+import { authRoutes } from "./auth"; 
 import type { ApiResponse, HealthCheck } from "shared";
 import type { DbClient } from "./types";
 
@@ -41,7 +42,8 @@ export const createApp = (getPrisma: () => DbClient) => {
     )
 
     .use(postRoutes(getPrisma))
-    .use(authRoutes) // 👈 pakai authRoutes dari auth.ts
+    .use(authRoutes) // pakai authRoutes dari auth.ts
+    .use(notificationRoutes(getPrisma)) // pakai notificationRoutes dari notification.ts
 
     .get("/", (): ApiResponse<HealthCheck> => ({
       data: { status: "ok" },

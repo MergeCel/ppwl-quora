@@ -15,7 +15,7 @@ export default function CreatePostBox({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const { token, isAuthenticated } = useAuthStore();
+  const { token, isAuthenticated, user } = useAuthStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleOpen = (tab: Tab = "kiriman") => {
@@ -79,9 +79,19 @@ export default function CreatePostBox({
         color: "white",
         flexShrink: 0,
         fontSize: "15px",
+        overflow: "hidden",
+        padding: 0,
       }}
     >
-      {userName.charAt(0).toUpperCase()}
+      {user?.avatarUrl ? (
+        <img
+          src={user.avatarUrl}
+          alt={userName}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      ) : (
+        userName.charAt(0).toUpperCase()
+      )}
     </div>
   );
 
@@ -89,8 +99,19 @@ export default function CreatePostBox({
     <>
       <div className="create-post-box">
         <div className="create-post-top">
-          <div className="create-post-avatar">
-            {userName.charAt(0).toUpperCase()}
+          <div
+            className="create-post-avatar"
+            style={{ overflow: "hidden", padding: 0 }}
+          >
+            {user?.avatarUrl ? (
+              <img
+                src={user.avatarUrl}
+                alt={userName}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            ) : (
+              userName.charAt(0).toUpperCase()
+            )}
           </div>
           <button
             className="create-post-input"
