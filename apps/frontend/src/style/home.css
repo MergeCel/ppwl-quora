@@ -170,7 +170,7 @@ body {
   width: 100%;
   max-width: 1060px;
   margin: 0 auto;
-  margin-top: 52px;
+  margin-top: 16px; /* ganti dari 52px ke 16px */
   display: flex;
   gap: 16px;
   align-items: flex-start;
