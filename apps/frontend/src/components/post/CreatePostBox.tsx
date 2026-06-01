@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+// PERBAIKAN IMPORT: Biarkan "Image" dan gunakan untuk ikon
 import { HelpCircle, PenLine, Send, Image, X } from "lucide-react";
 import { useAuthStore } from "../../stores/AuthStore";
 
@@ -6,8 +7,10 @@ type Tab = "pertanyaan" | "kiriman";
 
 export default function CreatePostBox({
   userName = "User",
+  externalOpenTrigger = 0,
 }: {
   userName?: string;
+  externalOpenTrigger?: number;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("pertanyaan");
@@ -17,6 +20,12 @@ export default function CreatePostBox({
   const [loading, setLoading] = useState(false);
   const { token, isAuthenticated, user } = useAuthStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (externalOpenTrigger > 0) {
+      handleOpen("pertanyaan");
+    }
+  }, [externalOpenTrigger]);
 
   const handleOpen = (tab: Tab = "kiriman") => {
     if (!isAuthenticated) {
@@ -422,6 +431,7 @@ const handleSubmit = async () => {
                         (e.currentTarget.style.background = "none")
                       }
                     >
+                      {/* INI KAN YANG TADI BIKIN ERROR, KARENA PAKAI <Image /> */}
                       <Image size={20} />
                     </button>
                   </>

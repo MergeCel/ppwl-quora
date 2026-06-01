@@ -35,6 +35,9 @@ export default function HomePage() {
   const [posts, setPosts] = useState<any[]>(backupDummyPosts);
   const [isLoading, setIsLoading] = useState(true);
 
+  // PERBAIKAN 1: Tambahkan state ini khusus untuk memicu pop-up dari tombol merah
+  const [triggerOpenModal, setTriggerOpenModal] = useState(0);
+
   useEffect(() => {
     const fetchPosts = async () => {
       if (!import.meta.env.VITE_BACKEND_URL) {
@@ -59,13 +62,24 @@ export default function HomePage() {
 
   return (
     <div className="home-page">
+      {/* PERBAIKAN 2: Berikan fungsi untuk menambah angka trigger saat tombol merah diklik */}
       <TopNavbar
-        user={{ name: user?.name || "User Qarou", email: user?.email || "", avatarUrl: user?.avatarUrl || "" }}
+        user={{
+          name: user?.name || "User Qarou",
+          email: user?.email || "",
+          avatarUrl: user?.avatarUrl || "",
+        }}
+        onOpenModal={() => setTriggerOpenModal((prev) => prev + 1)}
       />
       <div className="home-layout">
         <LeftSidebar />
         <main className="feed-section">
-          <CreatePostBox userName={user?.name || "User Qarou"} />
+          {/* PERBAIKAN 3: Kirim sinyal trigger ke dalam CreatePostBox */}
+          <CreatePostBox
+            userName={user?.name || "User Qarou"}
+            externalOpenTrigger={triggerOpenModal}
+          />
+
           {isLoading ? (
             <p className="text-center p-4 text-gray-500">Memuat postingan...</p>
           ) : (
