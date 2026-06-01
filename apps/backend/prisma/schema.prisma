@@ -42,6 +42,18 @@ model User {
   @@map("users")
 }
 
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String   // Penerima notifikasi
+  type      String   // Jenis: "NEW_POST", "NEW_COMMENT", "LIKE"
+  message   String   // Konten teks isi notifikasi
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Relasi ke model User (sesuaikan nama relasi dengan skema yang kamu punya)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 model Post {
   id            Int            @id @default(autoincrement())
   user_id       Int
