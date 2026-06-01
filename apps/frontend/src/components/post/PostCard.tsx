@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "../../stores/AuthStore";
 import { useNavigate } from "react-router-dom";
+import PostImage from "./PostImage";
 
 interface PostCardProps {
   postId?: number;
@@ -315,14 +316,7 @@ export default function PostCard({
         )}
       </div>
 
-      {image && !isEditing && (
-        <img
-          className="post-image"
-          src={image}
-          alt="Post visual"
-          loading="lazy"
-        />
-      )}
+      {image && !isEditing && <PostImage image={image} />}
 
       <div className="post-actions">
         <button

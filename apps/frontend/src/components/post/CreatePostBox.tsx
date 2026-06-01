@@ -41,29 +41,79 @@ export default function CreatePostBox({
     setImagePreview(URL.createObjectURL(file));
   };
 
-  const handleSubmit = async () => {
-    if (!content.trim()) return;
-    setLoading(true);
-    try {
-      let image_url = null;
-      if (imageFile) image_url = imagePreview;
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/posts`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+  const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      resolve(reader.result as string);
+    };
+
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+};
+
+const handleSubmit = async () => {
+  if (!content.trim()) return;
+
+  setLoading(true);
+
+  try {
+    let image_url: string | null = null;
+
+    if (imageFile) {
+      const base64 = await fileToBase64(imageFile);
+
+      const uploadRes = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/uploads/image`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            fileName: imageFile.name,
+            contentType: imageFile.type,
+            base64,
+          }),
         },
-        body: JSON.stringify({ content, image_url }),
-      });
-      const data = await res.json();
-      console.log(data);
-      handleClose();
-    } catch (err) {
-      console.error("Gagal kirim post:", err);
-    } finally {
-      setLoading(false);
+      );
+
+      const uploadData = await uploadRes.json();
+
+      if (!uploadRes.ok) {
+        throw new Error(uploadData.error || "Gagal upload gambar");
+      }
+
+      image_url = uploadData.image_url;
     }
-  };
+
+    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/posts`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ content, image_url }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Gagal membuat post");
+    }
+
+    console.log(data);
+    handleClose();
+    window.location.reload();
+  } catch (err) {
+    console.error("Gagal kirim post:", err);
+    alert(err instanceof Error ? err.message : "Gagal kirim post");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const Avatar = () => (
     <div
