@@ -17,7 +17,14 @@ export const postRoutes = (getPrisma: () => DbClient) =>
         set.status = 401;
         return { userId: null };
       }
-      return { userId: payload.id as number };
+      const userId = Number(payload.id);
+
+if (!userId || Number.isNaN(userId)) {
+  set.status = 401;
+  return { userId: null };
+}
+
+return { userId };
     })
 
     // GET /posts — feed publik
@@ -99,27 +106,27 @@ export const postRoutes = (getPrisma: () => DbClient) =>
         return { error: `Maksimal ${MAX_POSTS} postingan per user` };
       }
 
-      const { content } = body;
+      const { content, image_url } = body;
       if (!content?.trim()) {
         set.status = 400;
         return { error: "Konten tidak boleh kosong" };
       }
 
       const post = await (getPrisma() as any).post.create({
-        data: {
-          content: content.trim(),
-          user_id: userId,
-        },
-        include: {
-          user: {
-            select: { id: true, name: true, username: true, avatar_url: true },
-          },
-          _count: { select: { likes: true, comments: true } },
-        },
-      });
-
-      set.status = 201;
-      return { data: post };
+  data: {
+    content: content.trim(),
+    image_url: image_url || null,
+    user_id: userId,
+  },
+  include: {
+    user: {
+      select: { id: true, name: true, username: true, avatar_url: true },
+    },
+    _count: { select: { likes: true, comments: true } },
+  },
+});
+set.status = 201;
+return { data: post };
     })
 
     // PATCH /posts/:id — edit post
@@ -141,13 +148,14 @@ export const postRoutes = (getPrisma: () => DbClient) =>
         return { error: "Bukan postinganmu" };
       }
 
-      const { content } = body;
+      const { content, image_url } = body;
 
       const updated = await (getPrisma() as any).post.update({
         where: { id: Number(params.id) },
         data: {
-          ...(content ? { content: content.trim() } : {}),
-        },
+  ...(content ? { content: content.trim() } : {}),
+  ...(image_url !== undefined ? { image_url: image_url || null } : {}),
+},
         include: {
           user: {
             select: { id: true, name: true, username: true, avatar_url: true },

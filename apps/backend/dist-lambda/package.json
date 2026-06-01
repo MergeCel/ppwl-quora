@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@prisma/client-runtime-utils": "^7.7.0",
+    "@prisma/adapter-pg": "^7.7.0",
+    "pg": "^8.16.0"
+  }
+}

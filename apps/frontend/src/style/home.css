@@ -6,6 +6,20 @@
   padding: 0;
 }
 
+.post-image-wrap {
+  width: 100%;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.post-image-wrap img,
+.post-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
 body {
   background: #111111;
   color: white;
