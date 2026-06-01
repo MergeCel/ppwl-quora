@@ -19,12 +19,12 @@ export const postRoutes = (getPrisma: () => DbClient) =>
       }
       const userId = Number(payload.id);
 
-if (!userId || Number.isNaN(userId)) {
-  set.status = 401;
-  return { userId: null };
-}
+      if (!userId || Number.isNaN(userId)) {
+        set.status = 401;
+        return { userId: null };
+      }
 
-return { userId };
+      return { userId };
     })
 
     // GET /posts — feed publik
@@ -113,20 +113,20 @@ return { userId };
       }
 
       const post = await (getPrisma() as any).post.create({
-  data: {
-    content: content.trim(),
-    image_url: image_url || null,
-    user_id: userId,
-  },
-  include: {
-    user: {
-      select: { id: true, name: true, username: true, avatar_url: true },
-    },
-    _count: { select: { likes: true, comments: true } },
-  },
-});
-set.status = 201;
-return { data: post };
+        data: {
+          content: content.trim(),
+          image_url: image_url || null,
+          user_id: userId,
+        },
+        include: {
+          user: {
+            select: { id: true, name: true, username: true, avatar_url: true },
+          },
+          _count: { select: { likes: true, comments: true } },
+        },
+      });
+      set.status = 201;
+      return { data: post };
     })
 
     // PATCH /posts/:id — edit post
@@ -153,9 +153,9 @@ return { data: post };
       const updated = await (getPrisma() as any).post.update({
         where: { id: Number(params.id) },
         data: {
-  ...(content ? { content: content.trim() } : {}),
-  ...(image_url !== undefined ? { image_url: image_url || null } : {}),
-},
+          ...(content ? { content: content.trim() } : {}),
+          ...(image_url !== undefined ? { image_url: image_url || null } : {}),
+        },
         include: {
           user: {
             select: { id: true, name: true, username: true, avatar_url: true },
@@ -191,7 +191,7 @@ return { data: post };
       return { message: "Post berhasil dihapus" };
     })
 
-    // POST /posts/:id/like — toggle like
+    // POST /posts/:id/like — toggle like & notifikasi
     .post("/:id/like", async ({ userId, params, set }: any) => {
       if (!userId) {
         set.status = 401;
@@ -224,11 +224,12 @@ return { data: post };
           data: { post_id: postId, user_id: userId },
         });
 
+        // 🔔 NOTIFIKASI LIKE: Dikirim ke pemilik post (jika yang like bukan dirinya sendiri)
         if (post.user_id !== userId) {
           await (getPrisma() as any).notification.create({
             data: {
-              user_id: post.user_id,
-              actor_id: userId,
+              user_id: post.user_id, // Penerima notif
+              actor_id: userId, // Yang nge-like
               type: "like",
               post_id: postId,
             },
@@ -240,4 +241,57 @@ return { data: post };
         });
         return { liked: true, like_count: count };
       }
+    })
+
+    // POST /posts/:id/comments — buat komentar baru & notifikasi
+    .post("/:id/comments", async ({ userId, params, body, set }: any) => {
+      if (!userId) {
+        set.status = 401;
+        return { error: "Unauthorized" };
+      }
+
+      const postId = Number(params.id);
+      const { content } = body;
+
+      if (!content?.trim()) {
+        set.status = 400;
+        return { error: "Komentar tidak boleh kosong" };
+      }
+
+      const post = await (getPrisma() as any).post.findUnique({
+        where: { id: postId },
+      });
+
+      if (!post) {
+        set.status = 404;
+        return { error: "Post tidak ditemukan" };
+      }
+
+      const comment = await (getPrisma() as any).comment.create({
+        data: {
+          content: content.trim(),
+          post_id: postId,
+          user_id: userId,
+        },
+        include: {
+          user: {
+            select: { id: true, name: true, username: true, avatar_url: true },
+          },
+        },
+      });
+
+      // 🔔 NOTIFIKASI KOMENTAR: Dikirim ke pemilik post (jika yang komentar bukan dirinya sendiri)
+      if (post.user_id !== userId) {
+        await (getPrisma() as any).notification.create({
+          data: {
+            user_id: post.user_id, // Penerima notif
+            actor_id: userId, // Yang berkomentar
+            type: "comment",
+            post_id: postId,
+          },
+        });
+      }
+
+      set.status = 201;
+      return { data: comment };
     });
