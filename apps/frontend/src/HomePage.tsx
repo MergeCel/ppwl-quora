@@ -15,7 +15,7 @@ const backupDummyPosts = [
       "Saya sebelum baca buku, tapi setelah baca buku jadi lebih terarah. Apa pendapat kalian soal membaca di tahun 2026 ini?",
     image_url:
       "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=700&q=80",
-    user: { name: "Alpraditia Malik" },
+    user: { id: null, name: "Alpraditia Malik" },
     _count: { likes: 0, comments: 0 },
   },
   {
@@ -25,7 +25,7 @@ const backupDummyPosts = [
     content:
       "Guys, jangan lupa besok kumpul buat bahas progress tugas besar PPWL Qarou ya. Semangat tim A2!",
     image_url: null,
-    user: { name: "Arjun Maheswara" },
+    user: { id: null, name: "Arjun Maheswara" },
     _count: { likes: 0, comments: 0 },
   },
 ];
@@ -73,6 +73,7 @@ export default function HomePage() {
               <PostCard
                 key={post.id}
                 postId={typeof post.id === "number" ? post.id : undefined}
+                authorId={post.user?.id ?? undefined}
                 author={post.user?.name || post.author || "Anonim"}
                 role={post.role || "User Qarou"}
                 time={post.created_at || "Baru saja"}

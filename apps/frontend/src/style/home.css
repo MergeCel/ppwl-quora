@@ -172,7 +172,7 @@ body {
   width: 100%;
   max-width: 1060px;
   margin: 0 auto;
-  margin-top: 52px;
+  margin-top: 16px; /* ganti dari 52px ke 16px */
   display: flex;
   gap: 16px;
   align-items: flex-start;
@@ -489,25 +489,14 @@ body {
   color: #2e69ff;
 }
 .profile-dropdown {
-  position: absolute;
-
-  top: 54px;
-
-  right: 90px;
-
+  /* Hapus top: 54px; dan right: 90px; */
   width: 320px;
-
   background: #1f1f1f;
-
   border: 1px solid rgba(255, 255, 255, 0.08);
-
   border-radius: 14px;
-
   overflow: hidden;
-
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-
-  z-index: 99999;
+  /* Kita tidak perlu z-index: 99999 di sini jika sudah ada di React */
 }
 
 .profile-dropdown-header {
