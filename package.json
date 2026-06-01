@@ -8,5 +8,8 @@
     "dev:frontend": "bun run --filter frontend dev",
     "dev:backend": "bun run --filter backend dev",
     "build": "bun run --filter '*' build"
+  },
+  "dependencies": {
+    "@elysiajs/cors": "^1.4.2"
   }
 }

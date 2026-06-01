@@ -1,25 +1,20 @@
-import {
-  Home,
-  ClipboardList,
-  PenSquare,
-  Users,
-  Bell,
-  Search,
-  Globe,
-} from "lucide-react";
+import { Home, PenSquare, Bell, Search, Globe } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfileDropdown from "./ProfileDropdown";
 
+// Tambahkan onOpenModal pada tipe props
 type TopNavbarProps = {
   user?: {
     name: string;
     email: string;
     avatarUrl?: string;
   };
+  onOpenModal?: () => void;
 };
 
-export default function TopNavbar({ user }: TopNavbarProps) {
+// Terima props onOpenModal
+export default function TopNavbar({ user, onOpenModal }: TopNavbarProps) {
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
   const safeUser = user || {
@@ -51,7 +46,7 @@ export default function TopNavbar({ user }: TopNavbarProps) {
           <button
             className="topnav-icon"
             title="Notifikasi"
-            onClick={() => navigate("/notifications")} // Diarahkan ke /notifications sesuai dengan rute endpoint backend
+            onClick={() => navigate("/notifications")}
           >
             <Bell size={22} />
             <div className="notif-badge" />
@@ -70,7 +65,7 @@ export default function TopNavbar({ user }: TopNavbarProps) {
             <PenSquare size={22} />
           </button>
 
-          {/* PERBAIKAN: Tambahkan inline-flex dan align-items agar tidak merusak layout navbar */}
+          {/* Wrapper Avatar dan Dropdown (Dipusatkan) */}
           <div
             style={{
               position: "relative",
@@ -99,14 +94,14 @@ export default function TopNavbar({ user }: TopNavbarProps) {
               )}
             </button>
 
-            {/* Menu Dropdown dipusatkan tepat di bawah tombol avatar */}
+            {/* Menu Dropdown */}
             {showDropdown && (
               <div
                 style={{
                   position: "absolute",
-                  top: "calc(100% + 8px)", // Jarak vertikal dari tombol
-                  left: "50%", // Geser titik awalnya ke tengah tombol
-                  transform: "translateX(-50%)", // Tarik ke kiri separuh lebarnya agar benar-benar simetris
+                  top: "calc(100% + 8px)",
+                  left: "50%",
+                  transform: "translateX(-50%)",
                   zIndex: 9999,
                 }}
               >
@@ -121,7 +116,9 @@ export default function TopNavbar({ user }: TopNavbarProps) {
           <button className="topnav-globe">
             <Globe size={18} />
           </button>
-          <button className="topnav-question-btn">
+
+          {/* Tombol Tambah Pertanyaan (Memicu Modal Pop-up) */}
+          <button className="topnav-question-btn" onClick={onOpenModal}>
             {window.innerWidth <= 768 ? "Tanya" : "Tambah pertanyaan"}
           </button>
         </div>

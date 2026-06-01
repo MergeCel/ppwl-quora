@@ -68,13 +68,15 @@ export default function PostDetailPage() {
     if (!commentInput.trim() || isSubmitting) return;
     setIsSubmitting(true);
     try {
-      const res = await fetch(`${backendUrl}/comments`, {
+      // Ganti baris fetch tersebut menjadi:
+      const res = await fetch(`${backendUrl}/posts/${id}/comments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ content: commentInput, post_id: Number(id) }),
+        // Perhatikan: post_id tidak perlu dikirim di body karena sudah ada di URL (:id)
+        body: JSON.stringify({ content: commentInput }),
       });
       if (res.ok) {
         const json = await res.json();
@@ -170,21 +172,34 @@ export default function PostDetailPage() {
             marginBottom: "12px",
           }}
         >
-          <div
-            style={{
-              width: "40px",
-              height: "40px",
-              borderRadius: "50%",
-              background: "#7c3aed",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontWeight: "bold",
-              fontSize: "16px",
-            }}
-          >
-            {post.user?.name?.charAt(0).toUpperCase()}
-          </div>
+          {post.user?.avatar_url ? (
+            <img
+              src={post.user.avatar_url}
+              alt={post.user?.name || "avatar"}
+              style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                objectFit: "cover",
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                background: "#7c3aed",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: "bold",
+                fontSize: "16px",
+              }}
+            >
+              {post.user?.name?.charAt(0).toUpperCase()}
+            </div>
+          )}
           <div>
             <div style={{ fontWeight: "600", fontSize: "15px" }}>
               {post.user?.name}

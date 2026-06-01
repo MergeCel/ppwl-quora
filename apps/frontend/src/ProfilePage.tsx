@@ -5,25 +5,46 @@ import { useRef, useState } from "react";
 import { useAuthStore } from "./stores/AuthStore";
 
 export default function ProfilePage() {
-  const { user: storeUser } = useAuthStore()
+  // Pastikan memanggil token dan fungsi untuk mengupdate data user di store
+  const { user: storeUser, token } = useAuthStore();
 
-  const [avatar, setAvatar] = useState<string | null>(storeUser?.avatarUrl || null);
+  const [avatar, setAvatar] = useState<string | null>(
+    storeUser?.avatarUrl || null,
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showEditName, setShowEditName] = useState(false);
   const [displayName, setDisplayName] = useState(storeUser?.name || "User");
+  const [isUploading, setIsUploading] = useState(false);
 
   return (
     <div className="profile-page">
-      <TopNavbar user={{
-        name: storeUser?.name || "User",
-        email: storeUser?.email || "",
-        avatarUrl: storeUser?.avatarUrl || undefined
-      }} />
+      <TopNavbar
+        user={{
+          name: storeUser?.name || "User",
+          email: storeUser?.email || "",
+          avatarUrl: storeUser?.avatarUrl || undefined,
+        }}
+      />
+
       <div className="profile-container">
         <div className="profile-header">
           <div className="profile-avatar-wrapper">
-            <div className="profile-avatar" style={{ overflow: "hidden", padding: 0 }}>
-              {avatar ? (
+            <div
+              className="profile-avatar"
+              style={{ overflow: "hidden", padding: 0 }}
+            >
+              {isUploading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "100%",
+                  }}
+                >
+                  ⏳{" "}
+                </div>
+              ) : avatar ? (
                 <img
                   src={avatar}
                   alt="Profile"
@@ -38,6 +59,7 @@ export default function ProfilePage() {
             <button
               className="edit-avatar-btn"
               onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
             >
               ✎
             </button>
@@ -50,8 +72,74 @@ export default function ProfilePage() {
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) {
-                  const imageUrl = URL.createObjectURL(file);
-                  setAvatar(imageUrl);
+                  setIsUploading(true);
+
+                  // Ubah gambar jadi base64 untuk dikirim ke API
+                  const reader = new FileReader();
+                  reader.readAsDataURL(file);
+                  reader.onloadend = async () => {
+                    const base64String = reader.result as string;
+
+                    try {
+                      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+                      // 1. UPLOAD KE AWS S3 (upload.ts)
+                      const uploadRes = await fetch(
+                        `${backendUrl}/uploads/image`,
+                        {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            fileName: file.name,
+                            contentType: file.type,
+                            base64: base64String,
+                          }),
+                        },
+                      );
+
+                      const uploadData = await uploadRes.json();
+
+                      if (uploadRes.ok && uploadData.image_url) {
+                        // 2. SIMPAN URL S3 KE DATABASE PRISMA (index.ts)
+                        const updateRes = await fetch(
+                          `${backendUrl}/users/avatar`,
+                          {
+                            method: "PATCH",
+                            headers: {
+                              "Content-Type": "application/json",
+                              Authorization: `Bearer ${token}`,
+                            },
+                            body: JSON.stringify({
+                              avatarUrl: uploadData.image_url,
+                            }),
+                          },
+                        );
+
+                        if (updateRes.ok) {
+                          setAvatar(uploadData.image_url);
+
+                          // WAJIB: Update data AuthStore agar foto berganti di semua halaman (Navbar, Notifikasi, dll)
+                          useAuthStore.setState({
+                            user: {
+                              ...storeUser,
+                              avatarUrl: uploadData.image_url,
+                            } as any,
+                          });
+
+                          alert("Foto profil berhasil diperbarui!");
+                        } else {
+                          alert("Gagal menyimpan foto ke database");
+                        }
+                      } else {
+                        alert("Gagal mengunggah gambar ke server");
+                      }
+                    } catch (error) {
+                      console.error("Error:", error);
+                      alert("Terjadi kesalahan sistem");
+                    } finally {
+                      setIsUploading(false);
+                    }
+                  };
                 }
               }}
             />
@@ -71,9 +159,7 @@ export default function ProfilePage() {
 
         <div className="profile-section">
           <h2>Profil</h2>
-          <div className="empty-profile">
-            Anda belum membagikan apa pun.
-          </div>
+          <div className="empty-profile">Anda belum membagikan apa pun.</div>
         </div>
       </div>
 
