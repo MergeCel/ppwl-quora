@@ -94,6 +94,7 @@ export default function HomePage() {
                 question=""
                 content={post.content}
                 image={post.image_url}
+                avatarUrl={post.user?.avatar_url}
                 avatarColor="#7c3aed"
                 likes={post._count?.likes ?? 0}
                 comments={post._count?.comments ?? 0}
