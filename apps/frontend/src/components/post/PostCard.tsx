@@ -24,6 +24,7 @@ interface PostCardProps {
   likes?: number;
   comments?: number;
   avatarColor?: string;
+  avatarUrl?: string;
 }
 
 export default function PostCard({
@@ -39,6 +40,7 @@ export default function PostCard({
   likes = 0,
   comments = 0,
   avatarColor = "#0ea5a4",
+  avatarUrl,
 }: PostCardProps) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(likes);
@@ -130,8 +132,12 @@ export default function PostCard({
     <div className="post-card">
       <div className="post-header">
         <div className="post-header-left">
-          <div className="post-avatar" style={{ background: avatarColor }}>
-            {author.charAt(0).toUpperCase()}
+          <div className="post-avatar" style={{ background: avatarColor, overflow: 'hidden' }}>
+            {avatarUrl ? (
+              <img src={avatarUrl} alt={author} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              author.charAt(0).toUpperCase()
+            )}
           </div>
           <div className="post-user-info">
             <div className="post-author-row">
