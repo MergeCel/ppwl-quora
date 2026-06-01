@@ -9,6 +9,7 @@ import { authRoutes } from "./auth";
 import type { ApiResponse, HealthCheck } from "shared";
 import type { DbClient } from "./types";
 import { uploadRoutes } from "./upload";
+import { commentRoutes } from "./comment"; // Pastikan file-mu memang bernama comment.ts
 
 const makeAuthMiddleware =
   (jwtInstance: any) =>
@@ -50,6 +51,7 @@ export const createApp = (getPrisma: () => DbClient) => {
     .use(authRoutes)
     .use(notificationRoutes(getPrisma))
     .use(uploadRoutes)
+    .use(commentRoutes(getPrisma))
 
     .get(
       "/",
@@ -85,23 +87,6 @@ export const createApp = (getPrisma: () => DbClient) => {
       }
     })
 
-    .get("/users", async ({ query, set }: any) => {
-      if (query.key !== process.env.SECRET_KEY) {
-        set.status = 403;
-        return { message: "Forbidden" };
-      }
-      const users = await getPrisma().user.findMany({
-        select: {
-          id: true,
-          name: true,
-          username: true,
-          email: true,
-          provider: true,
-          created_at: true,
-        },
-      });
-      return { data: users, message: "User list retrieved" };
-    })
     .get("/users", async ({ query, set }: any) => {
       if (query.key !== process.env.SECRET_KEY) {
         set.status = 403;

@@ -68,13 +68,15 @@ export default function PostDetailPage() {
     if (!commentInput.trim() || isSubmitting) return;
     setIsSubmitting(true);
     try {
-      const res = await fetch(`${backendUrl}/comments`, {
+      // Ganti baris fetch tersebut menjadi:
+      const res = await fetch(`${backendUrl}/posts/${id}/comments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ content: commentInput, post_id: Number(id) }),
+        // Perhatikan: post_id tidak perlu dikirim di body karena sudah ada di URL (:id)
+        body: JSON.stringify({ content: commentInput }),
       });
       if (res.ok) {
         const json = await res.json();
