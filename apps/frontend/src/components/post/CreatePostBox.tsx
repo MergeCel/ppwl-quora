@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-// PERBAIKAN IMPORT: Biarkan "Image" dan gunakan untuk ikon
 import { HelpCircle, PenLine, Send, Image, X } from "lucide-react";
 import { useAuthStore } from "../../stores/AuthStore";
 
@@ -20,6 +19,8 @@ export default function CreatePostBox({
   const [loading, setLoading] = useState(false);
   const { token, isAuthenticated, user } = useAuthStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  console.log("avatarUrl di CreatePostBox:", user?.avatarUrl) // 👈 log
 
   useEffect(() => {
     if (externalOpenTrigger > 0) {
@@ -51,78 +52,57 @@ export default function CreatePostBox({
   };
 
   const fileToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
 
-    reader.onload = () => {
-      resolve(reader.result as string);
-    };
-
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-};
-
-const handleSubmit = async () => {
-  if (!content.trim()) return;
-
-  setLoading(true);
-
-  try {
-    let image_url: string | null = null;
-
-    if (imageFile) {
-      const base64 = await fileToBase64(imageFile);
-
-      const uploadRes = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/uploads/image`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            fileName: imageFile.name,
-            contentType: imageFile.type,
-            base64,
-          }),
-        },
-      );
-
-      const uploadData = await uploadRes.json();
-
-      if (!uploadRes.ok) {
-        throw new Error(uploadData.error || "Gagal upload gambar");
+  const handleSubmit = async () => {
+    if (!content.trim()) return;
+    setLoading(true);
+    try {
+      let image_url: string | null = null;
+      if (imageFile) {
+        const base64 = await fileToBase64(imageFile);
+        const uploadRes = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/uploads/image`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              fileName: imageFile.name,
+              contentType: imageFile.type,
+              base64,
+            }),
+          }
+        );
+        const uploadData = await uploadRes.json();
+        if (!uploadRes.ok) throw new Error(uploadData.error || "Gagal upload gambar");
+        image_url = uploadData.image_url;
       }
 
-      image_url = uploadData.image_url;
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/posts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ content, image_url }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Gagal membuat post");
+      handleClose();
+      window.location.reload();
+    } catch (err) {
+      console.error("Gagal kirim post:", err);
+      alert(err instanceof Error ? err.message : "Gagal kirim post");
+    } finally {
+      setLoading(false);
     }
-
-    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/posts`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ content, image_url }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.error || "Gagal membuat post");
-    }
-
-    console.log(data);
-    handleClose();
-    window.location.reload();
-  } catch (err) {
-    console.error("Gagal kirim post:", err);
-    alert(err instanceof Error ? err.message : "Gagal kirim post");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const Avatar = () => (
     <div
@@ -130,7 +110,7 @@ const handleSubmit = async () => {
         width: "36px",
         height: "36px",
         borderRadius: "50%",
-        background: "#7c3aed",
+        background: user?.avatarUrl ? "transparent" : "#7c3aed",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -160,13 +140,18 @@ const handleSubmit = async () => {
         <div className="create-post-top">
           <div
             className="create-post-avatar"
-            style={{ overflow: "hidden", padding: 0 }}
+            style={{
+              overflow: "hidden",
+              padding: 0,
+              background: user?.avatarUrl ? "transparent" : "#ccc" ,
+              borderRadius: "50%",
+            }}
           >
             {user?.avatarUrl ? (
               <img
                 src={user.avatarUrl}
                 alt={userName}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                style={{ width: "40px", height: "40px", objectFit: "cover", display: "block", borderRadius: "50%", aspectRatio: "1 / 1"}}
               />
             ) : (
               userName.charAt(0).toUpperCase()
@@ -239,12 +224,7 @@ const handleSubmit = async () => {
             >
               <button
                 onClick={handleClose}
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  color: "#888",
-                }}
+                style={{ background: "none", border: "none", cursor: "pointer", color: "#888" }}
               >
                 <X size={20} />
               </button>
@@ -259,10 +239,7 @@ const handleSubmit = async () => {
                     fontWeight: "600",
                     fontSize: "13px",
                     color: activeTab === "pertanyaan" ? "#fff" : "#888",
-                    borderBottom:
-                      activeTab === "pertanyaan"
-                        ? "2px solid #fff"
-                        : "2px solid transparent",
+                    borderBottom: activeTab === "pertanyaan" ? "2px solid #fff" : "2px solid transparent",
                     whiteSpace: "nowrap",
                   }}
                 >
@@ -278,10 +255,7 @@ const handleSubmit = async () => {
                     fontWeight: "600",
                     fontSize: "13px",
                     color: activeTab === "kiriman" ? "#2e69ff" : "#888",
-                    borderBottom:
-                      activeTab === "kiriman"
-                        ? "2px solid #2e69ff"
-                        : "2px solid transparent",
+                    borderBottom: activeTab === "kiriman" ? "2px solid #2e69ff" : "2px solid transparent",
                     whiteSpace: "nowrap",
                   }}
                 >
@@ -293,22 +267,9 @@ const handleSubmit = async () => {
 
             {/* Konten */}
             <div style={{ padding: "16px 20px", minHeight: "180px" }}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  marginBottom: "14px",
-                }}
-              >
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
                 <Avatar />
-                <span
-                  style={{
-                    fontWeight: "600",
-                    fontSize: "14px",
-                    color: "#e5e5e5",
-                  }}
-                >
+                <span style={{ fontWeight: "600", fontSize: "14px", color: "#e5e5e5" }}>
                   {userName}
                 </span>
               </div>
@@ -355,32 +316,15 @@ const handleSubmit = async () => {
                       <img
                         src={imagePreview}
                         alt="preview"
-                        style={{
-                          width: "100%",
-                          borderRadius: "8px",
-                          maxHeight: "260px",
-                          objectFit: "cover",
-                        }}
+                        style={{ width: "100%", borderRadius: "8px", maxHeight: "260px", objectFit: "cover" }}
                       />
                       <button
-                        onClick={() => {
-                          setImageFile(null);
-                          setImagePreview(null);
-                        }}
+                        onClick={() => { setImageFile(null); setImagePreview(null); }}
                         style={{
-                          position: "absolute",
-                          top: "8px",
-                          right: "8px",
-                          background: "rgba(0,0,0,0.6)",
-                          border: "none",
-                          borderRadius: "50%",
-                          width: "28px",
-                          height: "28px",
-                          color: "white",
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
+                          position: "absolute", top: "8px", right: "8px",
+                          background: "rgba(0,0,0,0.6)", border: "none", borderRadius: "50%",
+                          width: "28px", height: "28px", color: "white", cursor: "pointer",
+                          display: "flex", alignItems: "center", justifyContent: "center",
                         }}
                       >
                         <X size={14} />
@@ -414,24 +358,12 @@ const handleSubmit = async () => {
                     <button
                       onClick={() => fileInputRef.current?.click()}
                       style={{
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        color: "#aaa",
-                        display: "flex",
-                        alignItems: "center",
-                        padding: "6px 10px",
-                        borderRadius: "6px",
+                        background: "none", border: "none", cursor: "pointer", color: "#aaa",
+                        display: "flex", alignItems: "center", padding: "6px 10px", borderRadius: "6px",
                       }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.background =
-                          "rgba(255,255,255,0.06)")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.background = "none")
-                      }
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.06)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
                     >
-                      {/* INI KAN YANG TADI BIKIN ERROR, KARENA PAKAI <Image /> */}
                       <Image size={20} />
                     </button>
                   </>
@@ -452,11 +384,7 @@ const handleSubmit = async () => {
                   opacity: loading ? 0.7 : 1,
                 }}
               >
-                {loading
-                  ? "Mengirim..."
-                  : activeTab === "pertanyaan"
-                    ? "Tambah pertanyaan"
-                    : "Kiriman"}
+                {loading ? "Mengirim..." : activeTab === "pertanyaan" ? "Tambah pertanyaan" : "Kiriman"}
               </button>
             </div>
           </div>
