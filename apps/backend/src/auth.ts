@@ -193,3 +193,55 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
       avatar_url: t.String()
     })
   })
+
+  .patch("/profile/name", async ({ body, headers, set }) => {
+    const authHeader = headers.authorization;
+
+    if (!authHeader) {
+      set.status = 401;
+      return { message: "Unauthorized" };
+    }
+
+    const token = authHeader.replace("Bearer ", "");
+
+    let userId: string;
+
+    try {
+      const payload = jwt.verify(token, process.env.JWT_SECRET!) as any;
+      userId = payload.id;
+    } catch {
+      set.status = 401;
+      return { message: "Token tidak valid" };
+    }
+
+    const { name } = body;
+
+    if (!name?.trim()) {
+      set.status = 400;
+      return { message: "Nama tidak boleh kosong" };
+    }
+
+    try {
+      const user = await getPrisma().user.update({
+        where: { id: Number(userId) },
+        data: { name: name.trim() },
+      });
+
+      return {
+        message: "Nama berhasil diupdate",
+        user: {
+          id: user.id.toString(),
+          name: user.name,
+          email: user.email,
+          avatarUrl: user.avatar_url,
+        },
+      };
+    } catch (err) {
+      set.status = 500;
+      return { message: err instanceof Error ? err.message : String(err) };
+    }
+  }, {
+    body: t.Object({
+      name: t.String(),
+    }),
+  })

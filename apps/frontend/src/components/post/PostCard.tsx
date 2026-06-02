@@ -25,6 +25,7 @@ interface PostCardProps {
   comments?: number;
   avatarColor?: string;
   avatarUrl?: string;
+  likedByMe?: boolean;
 }
 
 export default function PostCard({
@@ -39,11 +40,12 @@ export default function PostCard({
   originSpace,
   likes = 0,
   comments = 0,
+  likedByMe = false,
   avatarColor = "#0ea5a4",
   avatarUrl,
 }: PostCardProps) {
   const [avatarError, setAvatarError] = useState(false);
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(likedByMe);
   const [likeCount, setLikeCount] = useState(likes);
   const [visible, setVisible] = useState(true);
   const [expanded, setExpanded] = useState(false);
@@ -68,6 +70,14 @@ export default function PostCard({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+  setLikeCount(likes);
+}, [likes]);
+
+useEffect(() => {
+  setLiked(likedByMe);
+}, [likedByMe]);
+
   if (!visible) return null;
 
   const PREVIEW_LEN = 160;
@@ -76,23 +86,39 @@ export default function PostCard({
     expanded || !isLong ? content : content.slice(0, PREVIEW_LEN);
 
   const handleLike = async () => {
-    if (!isAuthenticated) {
-      alert("Silakan login terlebih dahulu");
-      return;
-    }
-    setLiked((l) => !l);
-    setLikeCount((c) => (liked ? c - 1 : c + 1));
-    if (!postId) return;
-    try {
-      await fetch(`${import.meta.env.VITE_BACKEND_URL}/posts/${postId}/like`, {
+  if (!isAuthenticated) {
+    alert("Silakan login terlebih dahulu");
+    return;
+  }
+
+  if (!postId) return;
+
+  const previousLiked = liked;
+  const previousCount = likeCount;
+
+  setLiked(!previousLiked);
+  setLikeCount(previousLiked ? previousCount - 1 : previousCount + 1);
+
+  try {
+    const res = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/posts/${postId}/like`,
+      {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
-      });
-    } catch {
-      setLiked((l) => !l);
-      setLikeCount((c) => (liked ? c + 1 : c - 1));
-    }
-  };
+      }
+    );
+
+    if (!res.ok) throw new Error("Gagal like");
+
+    const data = await res.json();
+
+    setLiked(data.liked);
+    setLikeCount(data.likeCount);
+  } catch {
+    setLiked(previousLiked);
+    setLikeCount(previousCount);
+  }
+};
 
   const handleComment = () => {
     if (postId) navigate(`/post/${postId}`);

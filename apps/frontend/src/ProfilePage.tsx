@@ -1,7 +1,7 @@
 import TopNavbar from "./components/layout/TopNavbar";
 import EditNameModal from "./components/profile/EditNameModal";
 import "./style/profile.css";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useAuthStore } from "./stores/AuthStore";
 
 export default function ProfilePage() {
@@ -12,6 +12,10 @@ export default function ProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showEditName, setShowEditName] = useState(false);
   const [displayName, setDisplayName] = useState(storeUser?.name || "User");
+  useEffect(() => {
+  setDisplayName(storeUser?.name || "User");
+  setAvatar(storeUser?.avatarUrl || null);
+}, [storeUser]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -126,7 +130,36 @@ export default function ProfilePage() {
         <EditNameModal
           currentName={displayName}
           onClose={() => setShowEditName(false)}
-          onSave={(newName) => setDisplayName(newName)}
+          onSave={async (newName) => {
+  if (!newName.trim()) return;
+
+  try {
+    const res = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/auth/profile/name`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name: newName.trim() }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message || "Gagal update nama");
+
+    setDisplayName(newName.trim());
+
+    if (storeUser && token) {
+      setAuth({ ...storeUser, name: newName.trim() }, token);
+    }
+  } catch (err) {
+    console.error("Gagal update nama:", err);
+    alert("Gagal menyimpan nama");
+  }
+}}
         />
       )}
     </div>

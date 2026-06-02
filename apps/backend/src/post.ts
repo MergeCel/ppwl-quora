@@ -11,12 +11,15 @@ export const postRoutes = (getPrisma: () => DbClient) =>
     .derive(async ({ headers, jwt, set }: any) => {
       const auth = headers.authorization;
       if (!auth) return { userId: null };
+
       const token = auth.replace("Bearer ", "");
       const payload = await jwt.verify(token);
+
       if (!payload) {
         set.status = 401;
         return { userId: null };
       }
+
       const userId = Number(payload.id);
 
       if (!userId || Number.isNaN(userId)) {
@@ -27,31 +30,42 @@ export const postRoutes = (getPrisma: () => DbClient) =>
       return { userId };
     })
 
-    // GET /posts — feed publik
     .get("/", async () => {
-      const posts = await (getPrisma() as any).post.findMany({
-        orderBy: { created_at: "desc" },
-        include: {
-          user: {
-            select: { id: true, name: true, username: true, avatar_url: true },
-          },
-          _count: { select: { likes: true, comments: true } },
+  const posts = await (getPrisma() as any).post.findMany({
+    orderBy: { created_at: "desc" },
+    include: {
+      user: {
+        select: { id: true, name: true, username: true, avatar_url: true },
+      },
+      likes: {
+        select: {
+          user_id: true,
         },
-      });
-      return { data: posts };
-    })
+      },
+      _count: {
+        select: {
+          likes: true,
+          comments: true,
+        },
+      },
+    },
+  });
 
-    // GET /posts/my — post milik sendiri + sisa kuota
+  return { data: posts };
+})
+
     .get("/my", async ({ userId, set }: any) => {
       if (!userId) {
         set.status = 401;
         return { error: "Unauthorized" };
       }
+
       const posts = await (getPrisma() as any).post.findMany({
         where: { user_id: userId },
         orderBy: { created_at: "desc" },
         include: { _count: { select: { likes: true, comments: true } } },
       });
+
       return {
         data: posts,
         remaining: Math.max(0, MAX_POSTS - posts.length),
@@ -59,10 +73,16 @@ export const postRoutes = (getPrisma: () => DbClient) =>
       };
     })
 
-    // GET /posts/:id — detail post + komentar
     .get("/:id", async ({ params, set }: any) => {
+      const postId = Number(params.id);
+
+      if (!postId || Number.isNaN(postId)) {
+        set.status = 400;
+        return { error: "ID post tidak valid" };
+      }
+
       const post = await (getPrisma() as any).post.findUnique({
-        where: { id: Number(params.id) },
+        where: { id: postId },
         include: {
           user: {
             select: { id: true, name: true, username: true, avatar_url: true },
@@ -84,32 +104,35 @@ export const postRoutes = (getPrisma: () => DbClient) =>
           _count: { select: { likes: true, comments: true } },
         },
       });
+
       if (!post) {
         set.status = 404;
         return { error: "Post tidak ditemukan" };
       }
+
       return { data: post };
     })
 
-    // POST /posts — buat post baru
     .post("/", async ({ userId, set, body }: any) => {
       if (!userId) {
         set.status = 401;
         return { error: "Unauthorized" };
       }
 
-      const count = await (getPrisma() as any).post.count({
-        where: { user_id: userId },
-      });
-      if (count >= MAX_POSTS) {
-        set.status = 403;
-        return { error: `Maksimal ${MAX_POSTS} postingan per user` };
-      }
-
       const { content, image_url } = body;
+
       if (!content?.trim()) {
         set.status = 400;
         return { error: "Konten tidak boleh kosong" };
+      }
+
+      const count = await (getPrisma() as any).post.count({
+        where: { user_id: userId },
+      });
+
+      if (count >= MAX_POSTS) {
+        set.status = 403;
+        return { error: `Maksimal ${MAX_POSTS} postingan per user` };
       }
 
       const post = await (getPrisma() as any).post.create({
@@ -125,24 +148,33 @@ export const postRoutes = (getPrisma: () => DbClient) =>
           _count: { select: { likes: true, comments: true } },
         },
       });
+
       set.status = 201;
       return { data: post };
     })
 
-    // PATCH /posts/:id — edit post
     .patch("/:id", async ({ userId, params, body, set }: any) => {
       if (!userId) {
         set.status = 401;
         return { error: "Unauthorized" };
       }
 
+      const postId = Number(params.id);
+
+      if (!postId || Number.isNaN(postId)) {
+        set.status = 400;
+        return { error: "ID post tidak valid" };
+      }
+
       const existing = await (getPrisma() as any).post.findUnique({
-        where: { id: Number(params.id) },
+        where: { id: postId },
       });
+
       if (!existing) {
         set.status = 404;
         return { error: "Post tidak ditemukan" };
       }
+
       if (existing.user_id !== userId) {
         set.status = 403;
         return { error: "Bukan postinganmu" };
@@ -150,10 +182,15 @@ export const postRoutes = (getPrisma: () => DbClient) =>
 
       const { content, image_url } = body;
 
+      if (content !== undefined && !content.trim()) {
+        set.status = 400;
+        return { error: "Konten tidak boleh kosong" };
+      }
+
       const updated = await (getPrisma() as any).post.update({
-        where: { id: Number(params.id) },
+        where: { id: postId },
         data: {
-          ...(content ? { content: content.trim() } : {}),
+          ...(content !== undefined ? { content: content.trim() } : {}),
           ...(image_url !== undefined ? { image_url: image_url || null } : {}),
         },
         include: {
@@ -163,35 +200,44 @@ export const postRoutes = (getPrisma: () => DbClient) =>
           _count: { select: { likes: true, comments: true } },
         },
       });
+
       return { data: updated };
     })
 
-    // DELETE /posts/:id
     .delete("/:id", async ({ userId, params, set }: any) => {
       if (!userId) {
         set.status = 401;
         return { error: "Unauthorized" };
       }
 
+      const postId = Number(params.id);
+
+      if (!postId || Number.isNaN(postId)) {
+        set.status = 400;
+        return { error: "ID post tidak valid" };
+      }
+
       const existing = await (getPrisma() as any).post.findUnique({
-        where: { id: Number(params.id) },
+        where: { id: postId },
       });
+
       if (!existing) {
         set.status = 404;
         return { error: "Post tidak ditemukan" };
       }
+
       if (existing.user_id !== userId) {
         set.status = 403;
         return { error: "Bukan postinganmu" };
       }
 
       await (getPrisma() as any).post.delete({
-        where: { id: Number(params.id) },
+        where: { id: postId },
       });
+
       return { message: "Post berhasil dihapus" };
     })
 
-    // POST /posts/:id/like — toggle like & notifikasi
     .post("/:id/like", async ({ userId, params, set }: any) => {
       if (!userId) {
         set.status = 401;
@@ -199,51 +245,72 @@ export const postRoutes = (getPrisma: () => DbClient) =>
       }
 
       const postId = Number(params.id);
+
+      if (!postId || Number.isNaN(postId)) {
+        set.status = 400;
+        return { error: "ID post tidak valid" };
+      }
+
       const post = await (getPrisma() as any).post.findUnique({
         where: { id: postId },
       });
+
       if (!post) {
         set.status = 404;
         return { error: "Post tidak ditemukan" };
       }
 
       const existing = await (getPrisma() as any).postLike.findUnique({
-        where: { post_id_user_id: { post_id: postId, user_id: userId } },
+        where: {
+          post_id_user_id: {
+            post_id: postId,
+            user_id: userId,
+          },
+        },
       });
 
       if (existing) {
         await (getPrisma() as any).postLike.delete({
-          where: { post_id_user_id: { post_id: postId, user_id: userId } },
-        });
-        const count = await (getPrisma() as any).postLike.count({
-          where: { post_id: postId },
-        });
-        return { liked: false, like_count: count };
-      } else {
-        await (getPrisma() as any).postLike.create({
-          data: { post_id: postId, user_id: userId },
-        });
-
-        // 🔔 NOTIFIKASI LIKE: Dikirim ke pemilik post (jika yang like bukan dirinya sendiri)
-        if (post.user_id !== userId) {
-          await (getPrisma() as any).notification.create({
-            data: {
-              user_id: post.user_id, // Penerima notif
-              actor_id: userId, // Yang nge-like
-              type: "like",
+          where: {
+            post_id_user_id: {
               post_id: postId,
+              user_id: userId,
             },
-          });
-        }
+          },
+        });
 
         const count = await (getPrisma() as any).postLike.count({
           where: { post_id: postId },
         });
-        return { liked: true, like_count: count };
+
+        return { liked: false, likeCount: count };
       }
+
+      await (getPrisma() as any).postLike.create({
+        data: {
+          post_id: postId,
+          user_id: userId,
+        },
+      });
+
+      if (post.user_id !== userId) {
+        await (getPrisma() as any).notification.create({
+          data: {
+            user_id: post.user_id,
+            actor_id: userId,
+            type: "like",
+            post_id: postId,
+          },
+        });
+      }
+
+      const count = await (getPrisma() as any).postLike.count({
+        where: { post_id: postId },
+      });
+
+      return { liked: true, likeCount: count };
     })
 
-    // POST /posts/:id/comments — buat komentar baru & notifikasi
     .post("/:id/comments", async ({ userId, params, body, set }: any) => {
       if (!userId) {
         set.status = 401;
@@ -252,6 +319,11 @@ export const postRoutes = (getPrisma: () => DbClient) =>
 
       const postId = Number(params.id);
       const { content } = body;
+
+      if (!postId || Number.isNaN(postId)) {
+        set.status = 400;
+        return { error: "ID post tidak valid" };
+      }
 
       if (!content?.trim()) {
         set.status = 400;
@@ -280,12 +352,11 @@ export const postRoutes = (getPrisma: () => DbClient) =>
         },
       });
 
-      // 🔔 NOTIFIKASI KOMENTAR: Dikirim ke pemilik post (jika yang komentar bukan dirinya sendiri)
       if (post.user_id !== userId) {
         await (getPrisma() as any).notification.create({
           data: {
-            user_id: post.user_id, // Penerima notif
-            actor_id: userId, // Yang berkomentar
+            user_id: post.user_id,
+            actor_id: userId,
             type: "comment",
             post_id: postId,
           },
