@@ -98,6 +98,9 @@ export default function HomePage() {
                 avatarColor="#7c3aed"
                 likes={post._count?.likes ?? 0}
                 comments={post._count?.comments ?? 0}
+likedByMe={post.likes?.some(
+  (like: any) => Number(like.user_id) === Number(user?.id)
+)}
               />
             ))
           )}
