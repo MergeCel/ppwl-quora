@@ -42,6 +42,7 @@ export default function PostCard({
   avatarColor = "#0ea5a4",
   avatarUrl,
 }: PostCardProps) {
+  const [avatarError, setAvatarError] = useState(false);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(likes);
   const [visible, setVisible] = useState(true);
@@ -133,8 +134,13 @@ export default function PostCard({
       <div className="post-header">
         <div className="post-header-left">
           <div className="post-avatar" style={{ background: avatarColor, overflow: 'hidden' }}>
-            {avatarUrl ? (
-              <img src={avatarUrl} alt={author} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            {avatarUrl && !avatarError ? (
+              <img
+                src={avatarUrl}
+                alt={author}
+                onError={() => setAvatarError(true)}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
             ) : (
               author.charAt(0).toUpperCase()
             )}

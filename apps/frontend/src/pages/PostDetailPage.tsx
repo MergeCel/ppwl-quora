@@ -16,6 +16,8 @@ export default function PostDetailPage() {
   const [commentInput, setCommentInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
+  const [failedAvatars, setFailedAvatars] = useState<Set<string>>(new Set());
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -172,10 +174,11 @@ export default function PostDetailPage() {
             marginBottom: "12px",
           }}
         >
-          {post.user?.avatar_url ? (
+          {post.user?.avatar_url && !avatarError ? (
             <img
               src={post.user.avatar_url}
               alt={post.user?.name || "avatar"}
+              onError={() => setAvatarError(true)}
               style={{
                 width: "40px",
                 height: "40px",
@@ -366,21 +369,32 @@ export default function PostDetailPage() {
                   marginBottom: "8px",
                 }}
               >
-                <div
-                  style={{
-                    width: "32px",
-                    height: "32px",
-                    borderRadius: "50%",
-                    background: "#0ea5a4",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontWeight: "bold",
-                    fontSize: "13px",
-                  }}
-                >
-                  {c.user?.name?.charAt(0).toUpperCase()}
-                </div>
+                {c.user?.avatar_url && !failedAvatars.has(c.user.avatar_url) ? (
+                  <img
+                    src={c.user.avatar_url}
+                    alt={c.user?.name || "avatar"}
+                    onError={() =>
+                      setFailedAvatars((prev) => new Set(prev).add(c.user.avatar_url))
+                    }
+                    style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover" }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      background: "#0ea5a4",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontWeight: "bold",
+                      fontSize: "13px",
+                    }}
+                  >
+                    {c.user?.name?.charAt(0).toUpperCase()}
+                  </div>
+                )}
                 <div>
                   <div style={{ fontWeight: "600", fontSize: "14px" }}>
                     {c.user?.name}
