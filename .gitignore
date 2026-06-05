@@ -3,7 +3,8 @@ node_modules
 .dockerignore
 dev.db
 docker-compose.yml
-
+.dockerignore
+dist-lambda/
 
 # output
 out
