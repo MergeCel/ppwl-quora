@@ -1,5 +1,9 @@
 # dependencies (bun install)
 node_modules
+.dockerignore
+dev.db
+docker-compose.yml
+
 
 # output
 out

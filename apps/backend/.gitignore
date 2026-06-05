@@ -1,5 +1,16 @@
 # dependencies (bun install)
 node_modules
+baseline.sql
+Dockerfile
+dev.db
+docker-compose.yml
+dist-lambda/
+dist/
+src/generated/
+data.sql
+data_pg.sql
+lambda-backend.zip
+
 
 # output
 out
@@ -20,6 +31,7 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .env.*
 **/.env
 **/.env.*
+.env.production
 
 # caches
 .eslintcache

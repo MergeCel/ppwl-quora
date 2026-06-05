@@ -1,16 +1,15 @@
 generator client {
   provider   = "prisma-client"
-  output     = "../src/generated/prisma-libsql"  // ← pisah output
+  output     = "../src/generated/prisma-pg"  // ← output berbeda
   engineType = "client"
   runtime    = "bun"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// Enum tetap bisa dipakai — Prisma handle sebagai TEXT di SQLite/LibSQL
 enum AuthProvider {
   email
   google
@@ -20,6 +19,7 @@ enum NotificationType {
   like
   comment
 }
+
 
 model User {
   id                Int          @id @default(autoincrement())

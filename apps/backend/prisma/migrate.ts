@@ -1,4 +1,4 @@
-import { prisma } from "./db";
+import { prisma } from "../src/db";
 import { readFileSync } from "fs";
 import { join } from "path";
 
